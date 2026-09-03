@@ -76,7 +76,7 @@ Angular Speed ω(t)
 
 DC motor의 armature 회로에 `KVL`을 적용하면
 
-$$
+```math
 V(t)
 =
 L\frac{di(t)}{dt}
@@ -84,20 +84,18 @@ L\frac{di(t)}{dt}
 Ri(t)
 +
 K_e\omega(t)
-$$
-
+```
 이다.
 
 이를 current derivative 형태로 정리하면
 
-$$
+```math
 \frac{di(t)}{dt}
 =
 -\frac{R}{L}i(t)
 -\frac{K_e}{L}\omega(t)
 +\frac{1}{L}V(t)
-$$
-
+```
 이다.
 
 ### Parameters
@@ -111,10 +109,9 @@ $$
 
 모터가 회전하면 `Back EMF`가 발생한다.
 
-$$
+```math
 e_b(t)=K_e\omega(t)
-$$
-
+```
 즉 motor speed가 증가할수록 반대 방향의 induced voltage가 증가하여
 current 증가를 억제한다.
 
@@ -124,32 +121,29 @@ current 증가를 억제한다.
 
 Motor Torque는 armature current에 비례한다고 가정한다.
 
-$$
+```math
 T_m(t)=K_ti(t)
-$$
-
+```
 회전 운동방정식은
 
-$$
+```math
 J_m\frac{d\omega(t)}{dt}
 =
 K_ti(t)
 -b\omega(t)
 -T_L(t)
-$$
-
+```
 로 둔다.
 
 따라서
 
-$$
+```math
 \frac{d\omega(t)}{dt}
 =
 \frac{K_t}{J_m}i(t)
 -\frac{b}{J_m}\omega(t)
 -\frac{1}{J_m}T_L(t)
-$$
-
+```
 이다.
 
 ### Parameters
@@ -170,84 +164,76 @@ $$
 
 State vector를
 
-$$
+```math
 x(t)
 =
 \begin{bmatrix}
 i(t)\\
 \omega(t)
 \end{bmatrix}
-$$
-
+```
 로 정의한다.
 
 그러면 DC motor dynamics는
 
-$$
+```math
 \boxed{
 \dot{x}
 =
 Ax+BV+ET_L
 }
-$$
-
+```
 형태의 `State-Space Model`로 표현할 수 있다.
 
 System matrix:
 
-$$
+```math
 A=
 \begin{bmatrix}
 -\frac{R}{L} & -\frac{K_e}{L}\\
 \frac{K_t}{J_m} & -\frac{b}{J_m}
 \end{bmatrix}
-$$
-
+```
 Input matrix:
 
-$$
+```math
 B=
 \begin{bmatrix}
 \frac{1}{L}\\
 0
 \end{bmatrix}
-$$
-
+```
 Load disturbance matrix:
 
-$$
+```math
 E=
 \begin{bmatrix}
 0\\
 -\frac{1}{J_m}
 \end{bmatrix}
-$$
-
+```
 Output equation:
 
-$$
+```math
 y=Cx
-$$
-
+```
 이며 motor speed를 output으로 사용하므로
 
-$$
+```math
 C=
 \begin{bmatrix}
 0&1
 \end{bmatrix}
-$$
-
+```
 이다.
 
 따라서
 
-$$
+```math
 \boxed{
 y(t)=\omega(t)
 }
-$$
-
+```
 가 된다.
 
 ---
@@ -256,18 +242,16 @@ $$
 
 초기 simulation에서는 외부 부하가 없는 조건으로 시작한다.
 
-$$
+```math
 \boxed{
 T_L=0
 }
-$$
-
+```
 이후 `Robustness Test`에서
 
-$$
+```math
 T_L\neq0
-$$
-
+```
 조건을 추가하여 load disturbance에 대한 controller 성능을 확인한다.
 
 ---
@@ -281,17 +265,16 @@ $$
 
 목표 속도를 $\omega_{\mathrm{ref}}(t)$, 실제 motor speed를 $\omega(t)$라고 하면 Tracking Error는
 
-$$
+```math
 \boxed{
 e(t)=\omega_{\mathrm{ref}}(t)-\omega(t)
 }
-$$
-
+```
 이다.
 
 PID Control Law는
 
-$$
+```math
 \boxed{
 V(t)
 =
@@ -301,8 +284,7 @@ K_i\int e(t)\,dt
 +
 K_d\frac{de(t)}{dt}
 }
-$$
-
+```
 로 정의한다.
 
 여기서 PID controller의 output $V(t)$는
@@ -347,10 +329,9 @@ Kp × Error 큼
 
 과거부터 누적된 error를 이용한다.
 
-$$
+```math
 K_i\int e(t)\,dt
-$$
-
+```
 작은 error가 오랫동안 남아 있다면 integral term이 계속 누적된다.
 
 따라서 `Ki`는 주로
@@ -365,10 +346,9 @@ $$
 
 현재 error가 얼마나 빠르게 변하는지를 본다.
 
-$$
+```math
 K_d\frac{de(t)}{dt}
-$$
-
+```
 속도가 너무 빠르게 목표값을 넘어가려고 할 경우
 변화율을 이용해 response를 완화하는 역할을 할 수 있다.
 
@@ -432,21 +412,19 @@ Optimization algorithm은 motor response graph를 보고
 
 정의는 다음과 같다.
 
-$$
+```math
 \boxed{
 \mathcal{J}\text{가 작을수록 좋은 Controller}
 }
-$$
-
+```
 따라서 PID optimization problem은
 
-$$
+```math
 \boxed{
 \min_{K_p,K_i,K_d}
 \mathcal{J}(K_p,K_i,K_d)
 }
-$$
-
+```
 이다.
 
 ---
@@ -466,7 +444,7 @@ v1에서는 좋은 controller를 세 가지 기준으로 평가한다.
 
 따라서 Cost Function을
 
-$$
+```math
 \boxed{
 \mathcal{J}
 =
@@ -476,8 +454,7 @@ w_o\mathcal{J}_{overshoot}
 +
 w_u\mathcal{J}_{control}
 }
-$$
-
+```
 형태로 구성한다.
 
 ---
@@ -486,20 +463,18 @@ $$
 
 Tracking Error:
 
-$$
+```math
 e(t)
 =
 \omega_{\mathrm{ref}}(t)-\omega(t)
-$$
-
+```
 가장 기본적인 error metric으로 `ISE`가 있다.
 
-$$
+```math
 ISE
 =
 \int_0^T e^2(t)\,dt
-$$
-
+```
 Error를 제곱하기 때문에 positive error와 negative error가
 서로 상쇄되지 않는다.
 
@@ -520,12 +495,11 @@ Error를 제곱하기 때문에 positive error와 negative error가
 
 따라서 시간 $t$를 곱한 `ITSE`를 사용한다.
 
-$$
+```math
 ITSE
 =
 \int_0^T te^2(t)\,dt
-$$
-
+```
 즉 시간이 지날수록 남아 있는 error에 더 큰 penalty가 적용된다.
 
 ```text
@@ -553,7 +527,7 @@ Reference speed 자체가 달라지면 error의 절대값도 달라진다.
 
 따라서 normalized error를 정의한다.
 
-$$
+```math
 \boxed{
 \tilde e(t)
 =
@@ -563,11 +537,10 @@ $$
 \omega_{\mathrm{ref}}
 }
 }
-$$
-
+```
 그리고 Tracking Cost v1은
 
-$$
+```math
 \boxed{
 \mathcal{J}_{tracking}
 =
@@ -575,8 +548,7 @@ $$
 \int_0^T
 t\tilde e^2(t)\,dt
 }
-$$
-
+```
 로 정의한다.
 
 ---
@@ -602,7 +574,7 @@ $$
 
 Normalized Overshoot:
 
-$$
+```math
 \boxed{
 M_p
 =
@@ -612,28 +584,24 @@ M_p
 \omega_{\mathrm{ref}}
 }
 }
-$$
-
+```
 예를 들어
 
-$$
+```math
 \omega_{\mathrm{ref}}=1000
-$$
-
-$$
+```
+```math
 \omega_{\max}=1400
-$$
-
+```
 이면
 
-$$
+```math
 M_p
 =
 \frac{1400-1000}{1000}
 =
 0.4
-$$
-
+```
 즉
 
 ```text
@@ -644,22 +612,20 @@ $$
 
 v1에서는
 
-$$
+```math
 \boxed{
 \mathcal{J}_{overshoot}=M_p^2
 }
-$$
-
+```
 로 사용한다.
 
 Overshoot가 발생하지 않았다면
 
-$$
+```math
 \boxed{
 \mathcal{J}_{overshoot}=0
 }
-$$
-
+```
 으로 둔다.
 
 ---
@@ -683,17 +649,16 @@ Voltage  = 계속 Maximum
 
 Normalized Control Input:
 
-$$
+```math
 \boxed{
 \tilde u(t)
 =
 \frac{V(t)}{V_{\max}}
 }
-$$
-
+```
 Control Effort Cost:
 
-$$
+```math
 \boxed{
 \mathcal{J}_{control}
 =
@@ -701,8 +666,7 @@ $$
 \int_0^T
 \tilde u^2(t)\,dt
 }
-$$
-
+```
 즉 큰 voltage를 오랫동안 사용하는 controller는
 더 높은 cost를 받는다.
 
@@ -720,7 +684,7 @@ $$
 
 따라서 최종 Cost Function v1은
 
-$$
+```math
 \boxed{
 \mathcal{J}
 =
@@ -730,8 +694,7 @@ $$
 +
 0.15\mathcal{J}_{control}
 }
-$$
-
+```
 이다.
 
 > **Important**
@@ -748,7 +711,7 @@ $$
 
 Optimizer가 찾는 parameter는 PID Gains이다.
 
-$$
+```math
 \theta
 =
 \begin{bmatrix}
@@ -756,29 +719,26 @@ K_p\\
 K_i\\
 K_d
 \end{bmatrix}
-$$
-
+```
 목적은
 
-$$
+```math
 \boxed{
 \theta^*
 =
 \arg\min_{\theta}
 \mathcal{J}(\theta)
 }
-$$
-
+```
 이다.
 
 즉 최종적으로 얻고 싶은 값은
 
-$$
+```math
 \boxed{
 K_p^*,\quad K_i^*,\quad K_d^*
 }
-$$
-
+```
 이다.
 
 ---
@@ -892,12 +852,11 @@ Cost가 작은 candidate가 다음 generation에 살아남도록 한다.
 
 지금까지 평가한
 
-$$
+```math
 (K_p,K_i,K_d)
 \rightarrow
 \mathcal{J}
-$$
-
+```
 관계를 이용해 surrogate model을 만든다.
 
 그 후
@@ -960,7 +919,7 @@ RL Control
 
 Possible RL State v1:
 
-$$
+```math
 \boxed{
 s_t
 =
@@ -970,8 +929,7 @@ e_t\\
 i_t
 \end{bmatrix}
 }
-$$
-
+```
 즉 Agent가 보는 정보는
 
 - Current Tracking Error
@@ -987,12 +945,11 @@ $$
 RL Agent가 결정하는 action은 motor voltage로 설정하는 것을
 우선 고려한다.
 
-$$
+```math
 \boxed{
 a_t=V_t
 }
-$$
-
+```
 실제 hardware에서는 이후
 
 `PWM Duty`
@@ -1005,7 +962,7 @@ $$
 
 RL Agent는 현재 state를 입력받아 action을 결정한다.
 
-$$
+```math
 \boxed{
 s_t
 \rightarrow
@@ -1013,8 +970,7 @@ s_t
 \rightarrow
 a_t
 }
-$$
-
+```
 전체 interaction은
 
 ```text
@@ -1044,13 +1000,12 @@ RL에서는 반대로 $\mathrm{Reward}\uparrow$를 목표로 한다.
 
 Possible Reward v1:
 
-$$
+```math
 r_t
 =
 -\alpha\tilde e_t^2
 -\beta\tilde u_t^2
-$$
-
+```
 즉
 
 ```text
@@ -1080,7 +1035,7 @@ RL Control       → Reward 최대화
 
 최종적으로 다음 세 controller를 비교한다.
 
-$$
+```math
 \boxed{
 \text{Manual PID}
 \quad vs \quad
@@ -1088,8 +1043,7 @@ $$
 \quad vs \quad
 \text{RL Controller}
 }
-$$
-
+```
 ---
 
 ## 6.1 Evaluation Metrics
@@ -1147,12 +1101,11 @@ Motor temperature가 변화하면 armature resistance가 변할 수 있다.
 
 예:
 
-$$
+```math
 \boxed{
 R\rightarrow1.2R
 }
-$$
-
+```
 ---
 
 ## 7.3 Inertia Variation
@@ -1162,30 +1115,27 @@ effective inertia가 증가할 수 있다.
 
 예:
 
-$$
+```math
 \boxed{
 J_m\rightarrow1.3J_m
 }
-$$
-
+```
 ---
 
 ## 7.4 Load Disturbance
 
 Nominal simulation에서는
 
-$$
+```math
 T_L=0
-$$
-
+```
 으로 시작하지만 robustness test에서는
 
-$$
+```math
 \boxed{
 T_L\neq0
 }
-$$
-
+```
 을 적용한다.
 
 예를 들어 motor가 일정 speed로 회전하는 도중
@@ -1211,12 +1161,11 @@ Controller Recovery
 
 따라서 measured speed를
 
-$$
+```math
 \omega_{\mathrm{measured}}
 =
 \omega+\text{noise}
-$$
-
+```
 형태로 구성하여 controller 성능을 확인한다.
 
 ---
@@ -1299,12 +1248,11 @@ Trajectory Tracking
 
 최종적으로는 단순 motor control이 아니라
 
-$$
+```math
 \boxed{
 \text{Trajectory Tracking}
 }
-$$
-
+```
 문제로 발전시키는 것을 long-term extension으로 둔다.
 
 ---
@@ -1424,7 +1372,7 @@ Quantum Extension
 
 현재 Cost Function은
 
-$$
+```math
 \boxed{
 \mathcal{J}
 =
@@ -1434,15 +1382,14 @@ $$
 +
 0.15\mathcal{J}_{control}
 }
-$$
-
+```
 로 시작한다.
 
 각 항은 다음과 같다.
 
 ### Tracking
 
-$$
+```math
 \mathcal{J}_{tracking}
 =
 \frac{1}{T^2}
@@ -1455,17 +1402,15 @@ t
 \omega_{\mathrm{ref}}
 }
 \right)^2dt
-$$
-
+```
 ### Overshoot
 
-$$
+```math
 \mathcal{J}_{overshoot}
 =
 M_p^2
-$$
-
-$$
+```
+```math
 M_p
 =
 \max
@@ -1477,11 +1422,10 @@ M_p
 \omega_{\mathrm{ref}}
 }
 \right)
-$$
-
+```
 ### Control Effort
 
-$$
+```math
 \mathcal{J}_{control}
 =
 \frac{1}{T}
@@ -1489,19 +1433,17 @@ $$
 \left(
 \frac{V(t)}{V_{\max}}
 \right)^2dt
-$$
-
+```
 따라서 optimization의 핵심은
 
-$$
+```math
 \boxed{
 (K_p^*,K_i^*,K_d^*)
 =
 \arg\min_{K_p,K_i,K_d}
 \mathcal{J}(K_p,K_i,K_d)
 }
-$$
-
+```
 이다.
 
 ---
@@ -1604,15 +1546,14 @@ Hardware / Robot Extension
 
 즉 다음 값을 정해야 한다.
 
-$$
+```math
 R,\quad
 L,\quad
 J_m,\quad
 b,\quad
 K_t,\quad
 K_e
-$$
-
+```
 그 후 첫 번째 실제 implementation은
 
 ```text
