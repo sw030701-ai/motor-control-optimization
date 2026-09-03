@@ -37,6 +37,12 @@
 | [Performance Comparison](experiments/performance_comparison.md) | Conventional PID, Optimized PID, RL 비교 table skeleton |
 | [Robustness Test](experiments/robustness_test.md) | Parameter variation, load torque, sensor noise benchmark |
 
+### Experiment Notebooks
+
+| Notebook | Description |
+|---|---|
+| [02 PID Baseline Tuning](../experiments/02_pid_baseline_tuning.ipynb) | Open-loop validation부터 baseline PID gains와 tuning record 저장까지 실행 |
+
 ---
 
 ## Extensions

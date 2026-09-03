@@ -254,14 +254,17 @@ RL Controller는 어떤 장단점이 있는가?
 
 | Item | Value |
 |---|---|
-| $K_{p,baseline}$ | TBD |
-| $K_{i,baseline}$ | TBD |
-| $K_{d,baseline}$ | TBD |
-| Reference speed | TBD |
-| Overshoot | TBD |
-| Steady-state error | TBD |
-| Settling time | TBD |
-| Control effort | TBD |
-| $\mathcal{J}_{baseline}$ | TBD |
+| $K_{p,baseline}$ | `0.08` |
+| $K_{i,baseline}$ | `0.80` |
+| $K_{d,baseline}$ | `0.002` |
+| Reference speed | `120 rad/s` |
+| Overshoot | `0.9176 %` |
+| Steady-state error | `~0 %` |
+| Settling time | `0.213 s` |
+| Control effort | `0.2583` |
+| $\mathcal{J}_{baseline}$ | `0.03894` |
 
-이 값을 기록한 뒤 [Optimization Plan](optimization_plan.md)으로 넘어간다.
+이 값은 [02 PID Baseline Tuning Notebook](../../experiments/02_pid_baseline_tuning.ipynb)에서 계산했다.
+전체 record는 [baseline_pid_tuning_record.md](../../results/tables/baseline_pid_tuning_record.md)에 저장한다.
+
+이 값을 고정한 뒤 [Optimization Plan](optimization_plan.md)으로 넘어간다.

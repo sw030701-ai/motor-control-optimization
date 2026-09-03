@@ -1,0 +1,2 @@
+K_p_baseline,K_i_baseline,K_d_baseline,reference_speed_rad_s,V_max,J_baseline,J_tracking,J_overshoot,J_control,overshoot_percent,steady_state_error_percent,settling_time_s,max_abs_voltage,saturation_percent,accepted_v1
+0.08,0.8,0.002,120.0,12.0,0.038939859903771516,0.0002833984292014931,8.419689368781308e-05,0.2583251441521911,0.9175886534161867,1.0275525615573619e-08,0.213,9.648,0.0,True
