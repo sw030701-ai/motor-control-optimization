@@ -37,7 +37,7 @@ Angular Speed ω(t)
 
 DC motor의 armature circuit에 `KVL`을 적용하면 다음과 같다.
 
-$$
+```math
 V(t)
 =
 L\frac{di(t)}{dt}
@@ -45,23 +45,23 @@ L\frac{di(t)}{dt}
 Ri(t)
 +
 K_e\omega(t)
-$$
+```
 
 이를 current derivative 형태로 정리하면:
 
-$$
+```math
 \frac{di(t)}{dt}
 =
 -\frac{R}{L}i(t)
 -\frac{K_e}{L}\omega(t)
 +\frac{1}{L}V(t)
-$$
+```
 
 여기서 $K_e\omega(t)$는 `Back EMF`이다.
 
-$$
+```math
 e_b(t)=K_e\omega(t)
-$$
+```
 
 Motor speed가 증가할수록 반대 방향의 induced voltage가 커지고,
 그 결과 armature current 증가가 억제된다.
@@ -72,29 +72,29 @@ Motor speed가 증가할수록 반대 방향의 induced voltage가 커지고,
 
 Motor torque는 armature current에 비례한다고 둔다.
 
-$$
+```math
 T_m(t)=K_ti(t)
-$$
+```
 
 회전 운동방정식은 다음과 같다.
 
-$$
+```math
 J_m\frac{d\omega(t)}{dt}
 =
 K_ti(t)
 -b\omega(t)
 -T_L(t)
-$$
+```
 
 따라서 angular acceleration은:
 
-$$
+```math
 \frac{d\omega(t)}{dt}
 =
 \frac{K_t}{J_m}i(t)
 -\frac{b}{J_m}\omega(t)
 -\frac{1}{J_m}T_L(t)
-$$
+```
 
 ---
 
@@ -102,71 +102,71 @@ $$
 
 State vector를 다음과 같이 정의한다.
 
-$$
+```math
 x(t)
 =
 \begin{bmatrix}
 i(t)\\
 \omega(t)
 \end{bmatrix}
-$$
+```
 
 그러면 DC motor dynamics는 다음 `State-Space Model`로 표현할 수 있다.
 
-$$
+```math
 \dot{x}=Ax+BV+ET_L
-$$
+```
 
 System matrix:
 
-$$
+```math
 A=
 \begin{bmatrix}
 -\frac{R}{L} & -\frac{K_e}{L}\\
 \frac{K_t}{J_m} & -\frac{b}{J_m}
 \end{bmatrix}
-$$
+```
 
 Input matrix:
 
-$$
+```math
 B=
 \begin{bmatrix}
 \frac{1}{L}\\
 0
 \end{bmatrix}
-$$
+```
 
 Load disturbance matrix:
 
-$$
+```math
 E=
 \begin{bmatrix}
 0\\
 -\frac{1}{J_m}
 \end{bmatrix}
-$$
+```
 
 Output equation은 다음과 같다.
 
-$$
+```math
 y=Cx
-$$
+```
 
 Motor speed를 output으로 사용하므로:
 
-$$
+```math
 C=
 \begin{bmatrix}
 0 & 1
 \end{bmatrix}
-$$
+```
 
 따라서:
 
-$$
+```math
 y(t)=\omega(t)
-$$
+```
 
 ---
 
@@ -204,16 +204,16 @@ v1 simulation에서는 다음 assumptions를 사용한다.
 
 Nominal simulation에서는 먼저:
 
-$$
+```math
 T_L=0
-$$
+```
 
 으로 시작한다.
 
 이후 [Robustness Test](../experiments/robustness_test.md)에서:
 
-$$
+```math
 T_L\neq0
-$$
+```
 
 조건을 추가하여 disturbance에 대한 controller 성능을 확인한다.

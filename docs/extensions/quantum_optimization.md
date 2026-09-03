@@ -34,9 +34,9 @@ Quantum optimization은 위 흐름이 완성된 이후 추가 연구 주제로 �
 
 PID gains는 원래 continuous variable이다.
 
-$$
+```math
 K_p,\quad K_i,\quad K_d\in\mathbb{R}
-$$
+```
 
 하지만 QUBO 또는 QAOA는 보통 binary variable 형태의 문제를 요구한다.
 따라서 quantum optimization을 적용하려면 PID gain을 먼저 discretization해야 한다.
@@ -80,9 +80,9 @@ Kd ∈ {Kd_1, Kd_2, ..., Kd_N}
 
 Continuous PID optimization 문제는 discrete search 문제로 바뀐다.
 
-$$
+```math
 \min_{K_p,K_i,K_d}\mathcal{J}(K_p,K_i,K_d)
-$$
+```
 
 ---
 
@@ -108,9 +108,9 @@ Discrete gain index를 binary variable로 표현한다.
 
 QUBO는 다음 형태의 binary optimization problem이다.
 
-$$
+```math
 \min_{z\in\{0,1\}^n} z^TQz
-$$
+```
 
 PID tuning 문제를 QUBO로 바꾸려면,
 binary vector $z$가 특정 PID gains combination을 의미하도록 만들고,

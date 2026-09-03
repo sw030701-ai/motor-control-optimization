@@ -10,7 +10,7 @@ PID controller를 설계하기 전에 먼저 어떤 motor를 제어할 것인지
 
 현재 DC motor model은 다음 equation으로 정의되어 있다.
 
-$$
+```math
 V(t)
 =
 L\frac{di(t)}{dt}
@@ -18,15 +18,15 @@ L\frac{di(t)}{dt}
 Ri(t)
 +
 K_e\omega(t)
-$$
+```
 
-$$
+```math
 J_m\frac{d\omega(t)}{dt}
 =
 K_ti(t)
 -b\omega(t)
 -T_L(t)
-$$
+```
 
 Simulation을 수행하려면 다음 parameter들의 numerical value가 필요하다.
 
@@ -78,9 +78,9 @@ Feedback       = 없음
 
 예를 들어 motor에 일정한 step voltage를 입력한다.
 
-$$
+```math
 V(t)=V_{\mathrm{test}}
-$$
+```
 
 그러면 simulation에서 armature current $i(t)$와 motor speed $\omega(t)$가 물리적으로 그럴듯한 response를 보이는지 확인한다.
 
@@ -90,51 +90,51 @@ $$
 
 부하가 없는 nominal condition에서:
 
-$$
+```math
 T_L=0
-$$
+```
 
 steady-state에서는 derivative가 0이다.
 
-$$
+```math
 \frac{di(t)}{dt}=0,\quad
 \frac{d\omega(t)}{dt}=0
-$$
+```
 
 Electrical equation:
 
-$$
+```math
 V=Ri+K_e\omega
-$$
+```
 
 Mechanical equation:
 
-$$
+```math
 0=K_ti-b\omega
-$$
+```
 
 따라서:
 
-$$
+```math
 i=\frac{b}{K_t}\omega
-$$
+```
 
 이를 electrical equation에 대입하면:
 
-$$
+```math
 V=
 R\frac{b}{K_t}\omega
 +
 K_e\omega
-$$
+```
 
 따라서 theoretical steady-state speed는 다음과 같다.
 
-$$
+```math
 \omega_{ss}
 =
 \frac{V}{K_e+\frac{Rb}{K_t}}
-$$
+```
 
 즉 open-loop simulation의 최종 speed는 이 값과 가까워야 한다.
 
@@ -163,11 +163,11 @@ PID reference speed는 motor가 실제로 도달 가능한 값이어야 한다.
 
 Voltage limit이 $V_{\max}$일 때 no-load steady-state speed는:
 
-$$
+```math
 \omega_{ss,\max}
 =
 \frac{V_{\max}}{K_e+\frac{Rb}{K_t}}
-$$
+```
 
 따라서 initial reference speed는 다음 원칙으로 선택한다.
 
@@ -180,13 +180,13 @@ PID tuning 결과가 motor 성능이 아니라 actuator limit에 의해 결정�
 
 v1에서는 안전하게 다음 범위에서 시작한다.
 
-$$
+```math
 \omega_{\mathrm{ref}}
 \approx
 0.5\sim0.8
 \times
 \omega_{ss,\max}
-$$
+```
 
 ---
 

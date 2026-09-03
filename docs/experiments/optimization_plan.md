@@ -10,9 +10,9 @@
 
 Optimizer가 찾는 값은 PID gains이다.
 
-$$
+```math
 \min_{K_p,K_i,K_d}\mathcal{J}(K_p,K_i,K_d)
-$$
+```
 
 Cost function은 [Cost Function Design](../theory/cost_function.md)을 따른다.
 

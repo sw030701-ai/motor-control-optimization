@@ -20,7 +20,7 @@ Bayesian Optimization
 
 Optimizer가 찾는 parameter는 PID gains이다.
 
-$$
+```math
 \theta
 =
 \begin{bmatrix}
@@ -28,27 +28,27 @@ K_p\\
 K_i\\
 K_d
 \end{bmatrix}
-$$
+```
 
 목적은 cost function을 최소화하는 gains를 찾는 것이다.
 
-$$
+```math
 \min_{K_p,K_i,K_d}\mathcal{J}(K_p,K_i,K_d)
-$$
+```
 
 또는:
 
-$$
+```math
 \theta^*
 =
 \arg\min_{\theta}\mathcal{J}(\theta)
-$$
+```
 
 최종적으로 얻고 싶은 값은 다음과 같다.
 
-$$
+```math
 K_p^*,\quad K_i^*,\quad K_d^*
-$$
+```
 
 ---
 
@@ -139,9 +139,9 @@ Cost가 작은 candidate가 다음 generation에 살아남도록 한다.
 
 `Bayesian Optimization`은 지금까지 평가한 관계를 이용한다.
 
-$$
+```math
 (K_p,K_i,K_d)\rightarrow\mathcal{J}
-$$
+```
 
 이 정보를 바탕으로 surrogate model을 만들고,
 
@@ -189,9 +189,9 @@ Optimizer는 다음을 바꾸지 않는다.
 
 Optimizer가 바꾸는 것은 오직:
 
-$$
+```math
 K_p,\quad K_i,\quad K_d
-$$
+```
 
 이다.
 

@@ -7,10 +7,11 @@ Optimizer는 response graph를 보고 "좋다" 또는 "나쁘다"라고 판단�
 
 본 프로젝트에서는 그 값을 $\mathcal{J}$로 표기한다.
 
-$$
-\mathcal{J}\text{가 작을수록 좋은 controller}
-$$
+```math
+\mathcal{J}\downarrow
+```
 
+$\mathcal{J}$가 작을수록 좋은 controller로 판단한다.
 ---
 
 ## 1. What is Good Control?
@@ -25,7 +26,7 @@ v1에서는 좋은 controller를 세 가지 기준으로 평가한다.
 
 따라서 cost function은 다음 형태로 구성한다.
 
-$$
+```math
 \mathcal{J}
 =
 w_e\mathcal{J}_{tracking}
@@ -33,7 +34,7 @@ w_e\mathcal{J}_{tracking}
 w_o\mathcal{J}_{overshoot}
 +
 w_u\mathcal{J}_{control}
-$$
+```
 
 ---
 
@@ -41,18 +42,18 @@ $$
 
 Tracking error는 다음과 같다.
 
-$$
+```math
 e(t)=\omega_{\mathrm{ref}}-\omega(t)
-$$
+```
 
 Reference speed가 달라지면 error의 절대값도 달라지므로,
 v1에서는 normalized tracking error를 사용한다.
 
-$$
+```math
 \tilde{e}(t)
 =
 \frac{\omega_{\mathrm{ref}}-\omega(t)}{\omega_{\mathrm{ref}}}
-$$
+```
 
 예를 들어 `100 rpm 기준의 10 rpm error`와
 `1000 rpm 기준의 10 rpm error`는 의미가 다르다.
@@ -64,27 +65,27 @@ Normalized error는 이 차이를 반영한다.
 
 기본 error metric으로는 `ISE`를 사용할 수 있다.
 
-$$
+```math
 ISE=\int_0^T e^2(t)\,dt
-$$
+```
 
 하지만 단순 ISE는 simulation 초반 error와 후반 error를 비슷하게 취급한다.
 Motor가 처음 출발할 때 생기는 error보다, 시간이 많이 지났는데도 남아 있는 error를
 더 나쁘게 보고 싶다면 `ITSE`가 더 적절하다.
 
-$$
+```math
 ITSE=\int_0^T t e^2(t)\,dt
-$$
+```
 
 v1 tracking cost는 normalized error를 사용한 ITSE 형태로 둔다.
 
-$$
+```math
 \mathcal{J}_{tracking}
 =
 \frac{1}{T^2}
 \int_0^T
 t\tilde{e}^{\,2}(t)\,dt
-$$
+```
 
 ```text
 Early Error
@@ -103,7 +104,7 @@ Late Error
 
 Normalized overshoot는 다음과 같이 둔다.
 
-$$
+```math
 M_p
 =
 \max
@@ -111,13 +112,13 @@ M_p
 0,
 \frac{\omega_{\max}-\omega_{\mathrm{ref}}}{\omega_{\mathrm{ref}}}
 \right)
-$$
+```
 
 Overshoot cost는:
 
-$$
+```math
 \mathcal{J}_{overshoot}=M_p^2
-$$
+```
 
 Overshoot가 발생하지 않으면 $M_p=0$이고,
 따라서 $\mathcal{J}_{overshoot}=0$이다.
@@ -140,19 +141,19 @@ Voltage  = 계속 Maximum
 
 따라서 normalized control input을 정의한다.
 
-$$
+```math
 \tilde{u}(t)=\frac{V(t)}{V_{\max}}
-$$
+```
 
 Control-effort cost는 다음과 같다.
 
-$$
+```math
 \mathcal{J}_{control}
 =
 \frac{1}{T}
 \int_0^T
 \tilde{u}^{\,2}(t)\,dt
-$$
+```
 
 큰 voltage를 오랫동안 사용하는 controller는 더 높은 cost를 받는다.
 
@@ -170,7 +171,7 @@ $$
 
 최종 cost function v1은 다음과 같다.
 
-$$
+```math
 \mathcal{J}
 =
 0.60\mathcal{J}_{tracking}
@@ -178,7 +179,7 @@ $$
 0.25\mathcal{J}_{overshoot}
 +
 0.15\mathcal{J}_{control}
-$$
+```
 
 > **Important**
 >
@@ -191,9 +192,9 @@ $$
 
 PID optimization의 목적은 다음과 같다.
 
-$$
+```math
 \min_{K_p,K_i,K_d}\mathcal{J}(K_p,K_i,K_d)
-$$
+```
 
 즉 optimizer는 여러 PID gains candidate를 simulation에 넣고,
 각 candidate의 response에서 $\mathcal{J}$를 계산한 뒤,

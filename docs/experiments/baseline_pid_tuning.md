@@ -50,21 +50,21 @@ Reference speed는 motor가 voltage limit 안에서 도달 가능한 값이어�
 
 No-load steady-state maximum speed를 다음과 같이 계산한다.
 
-$$
+```math
 \omega_{ss,\max}
 =
 \frac{V_{\max}}{K_e+\frac{Rb}{K_t}}
-$$
+```
 
 v1에서는 reference speed를 다음 범위에서 시작한다.
 
-$$
+```math
 \omega_{\mathrm{ref}}
 \approx
 0.5\sim0.8
 \times
 \omega_{ss,\max}
-$$
+```
 
 Reference가 너무 높으면 PID가 아무리 좋아도 voltage saturation 때문에 target을 따라가지 못한다.
 그 경우 tuning 문제와 actuator limit 문제가 섞여버린다.
@@ -88,9 +88,9 @@ Step 4: acceptance criteria를 만족하면 gains 고정
 
 먼저 integral과 derivative gain을 0으로 둔다.
 
-$$
+```math
 K_i=0,\quad K_d=0
-$$
+```
 
 이 상태에서 $K_p$를 작게 시작해서 점진적으로 증가시킨다.
 
@@ -172,11 +172,11 @@ Baseline PID는 다음 조건을 만족해야 한다.
 
 Acceptance criteria를 만족하면 baseline gains를 고정한다.
 
-$$
+```math
 K_{p,baseline},\quad
 K_{i,baseline},\quad
 K_{d,baseline}
-$$
+```
 
 이후 comparison에서는 baseline gains를 계속 바꾸지 않는다.
 
@@ -197,7 +197,7 @@ optimized PID와 RL controller의 성능 차이를 공정하게 비교하기 어
 
 Baseline gains를 고정한 뒤, 동일한 cost function으로 baseline cost를 계산한다.
 
-$$
+```math
 \mathcal{J}_{baseline}
 =
 \mathcal{J}
@@ -206,7 +206,7 @@ K_{p,baseline},
 K_{i,baseline},
 K_{d,baseline}
 \right)
-$$
+```
 
 이 값은 benchmark로만 사용한다.
 

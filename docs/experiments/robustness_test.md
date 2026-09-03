@@ -52,15 +52,15 @@ Motor temperature가 변하면 armature resistance가 변할 수 있다.
 
 Example:
 
-$$
+```math
 R\rightarrow1.2R
-$$
+```
 
 또는:
 
-$$
+```math
 R\rightarrow0.8R
-$$
+```
 
 확인할 질문:
 
@@ -76,9 +76,9 @@ Motor shaft에 load가 연결되면 effective inertia가 증가할 수 있다.
 
 Example:
 
-$$
+```math
 J_m\rightarrow1.3J_m
-$$
+```
 
 확인할 질문:
 
@@ -92,15 +92,15 @@ $$
 
 Nominal simulation에서는:
 
-$$
+```math
 T_L=0
-$$
+```
 
 으로 시작하지만 robustness test에서는:
 
-$$
+```math
 T_L\neq0
-$$
+```
 
 조건을 적용한다.
 
@@ -130,11 +130,11 @@ Controller Recovery
 
 Measured speed를 다음과 같이 구성할 수 있다.
 
-$$
+```math
 \omega_{\mathrm{measured}}
 =
 \omega+\mathrm{noise}
-$$
+```
 
 확인할 질문:
 

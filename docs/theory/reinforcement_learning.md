@@ -40,7 +40,7 @@ RL agent가 관찰할 수 있는 state는 motor의 현재 상황을 표현해야
 
 Possible RL state v1:
 
-$$
+```math
 s_t
 =
 \begin{bmatrix}
@@ -48,7 +48,7 @@ e_t\\
 \omega_t\\
 i_t
 \end{bmatrix}
-$$
+```
 
 각 항의 의미는 다음과 같다.
 
@@ -66,9 +66,9 @@ $$
 
 RL agent가 결정하는 action은 우선 motor voltage로 둔다.
 
-$$
+```math
 a_t=V_t
-$$
+```
 
 Simulation에서는 voltage command를 action으로 사용하고,
 hardware에서는 이를 `PWM Duty` 형태로 바꿀 수 있다.
@@ -87,13 +87,13 @@ PWM Duty
 
 Policy는 현재 state를 입력받아 action을 출력하는 함수이다.
 
-$$
+```math
 s_t
 \rightarrow
 \pi_\theta
 \rightarrow
 a_t
-$$
+```
 
 전체 interaction은 다음과 같다.
 
@@ -118,24 +118,24 @@ Reward
 
 PID optimization에서는 cost를 줄이는 것이 목표이다.
 
-$$
+```math
 \mathcal{J}\downarrow
-$$
+```
 
 RL에서는 reward를 키우는 것이 목표이다.
 
-$$
+```math
 \mathrm{Reward}\uparrow
-$$
+```
 
 Possible reward v1은 다음과 같이 둘 수 있다.
 
-$$
+```math
 r_t
 =
 -\alpha\tilde{e}_t^{\,2}
 -\beta\tilde{u}_t^{\,2}
-$$
+```
 
 즉:
 

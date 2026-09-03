@@ -89,15 +89,15 @@ DC motor 하나의 speed control이 성공하면,
 
 Left wheel speed:
 
-$$
+```math
 \omega_L
-$$
+```
 
 Right wheel speed:
 
-$$
+```math
 \omega_R
-$$
+```
 
 확장 흐름은 다음과 같다.
 
@@ -119,9 +119,9 @@ Trajectory Tracking
 
 최종적으로는 단순 motor speed control이 아니라 trajectory tracking 문제로 확장할 수 있다.
 
-$$
+```math
 \text{Trajectory Tracking}
-$$
+```
 
 이 단계에서는 motor-level PID control과 robot-level motion control을 구분해야 한다.
 

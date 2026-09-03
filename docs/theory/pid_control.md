@@ -35,9 +35,9 @@ Measured Speed
 Reference speed를 $\omega_{\mathrm{ref}}(t)$,
 실제 motor speed를 $\omega(t)$라고 하면 tracking error는 다음과 같다.
 
-$$
+```math
 e(t)=\omega_{\mathrm{ref}}(t)-\omega(t)
-$$
+```
 
 즉:
 
@@ -53,7 +53,7 @@ e(t) = 0  → reference를 정확히 추종
 
 PID controller의 output은 motor에 입력되는 voltage command로 둔다.
 
-$$
+```math
 V_{\mathrm{cmd}}(t)
 =
 K_pe(t)
@@ -61,13 +61,13 @@ K_pe(t)
 K_i\int_0^t e(\tau)\,d\tau
 +
 K_d\frac{de(t)}{dt}
-$$
+```
 
 실제 motor에 들어가는 voltage는 saturation을 적용한 값이다.
 
-$$
+```math
 V(t)=\mathrm{sat}\left(V_{\mathrm{cmd}}(t), -V_{\max}, V_{\max}\right)
-$$
+```
 
 ---
 
@@ -114,9 +114,9 @@ overshoot 또는 oscillation이 커질 수 있다.
 
 `Ki`는 과거부터 누적된 error를 사용한다.
 
-$$
+```math
 K_i\int_0^t e(\tau)\,d\tau
-$$
+```
 
 작은 error가 오랫동안 남아 있으면 integral term이 계속 누적된다.
 따라서 `Ki`는 주로 `Steady-State Error`를 줄이는 역할을 한다.
@@ -129,9 +129,9 @@ $$
 
 `Kd`는 error의 변화 속도에 반응한다.
 
-$$
+```math
 K_d\frac{de(t)}{dt}
-$$
+```
 
 Speed가 너무 빠르게 reference를 넘어가려는 경우 response를 완화하는 damping 역할을 할 수 있다.
 
