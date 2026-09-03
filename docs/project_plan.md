@@ -34,6 +34,7 @@ Optimization / Learning
 Performance Evaluation
       ↓
 Real System Extension
+```
 
 ---
 
@@ -58,11 +59,11 @@ Angular Speed ω(t)
 
 현재 프로젝트의 제어 대상은 **Motor Speed**로 설정한다.
 
-- `Input` : \(V(t)\) — Motor Voltage
-- `State 1` : \(i(t)\) — Armature Current
-- `State 2` : \(\omega(t)\) — Angular Velocity
-- `Output` : \(\omega(t)\) — Motor Speed
-- `Disturbance` : \(T_L(t)\) — Load Torque
+- `Input` : $V(t)$ — Motor Voltage
+- `State 1` : $i(t)$ — Armature Current
+- `State 2` : $\omega(t)$ — Angular Velocity
+- `Output` : $\omega(t)$ — Motor Speed
+- `Disturbance` : $T_L(t)$ — Load Torque
 
 > **핵심**
 >
@@ -160,8 +161,8 @@ $$
 
 > **Notation**
 >
-> Motor inertia는 \(J_m\)으로 표기한다.  
-> Cost Function은 이후 \(\mathcal{J}\)로 표기하여 둘을 구분한다.
+> Motor inertia는 $J_m$으로 표기한다.
+> Cost Function은 이후 $\mathcal{J}$로 표기하여 둘을 구분한다.
 
 ---
 
@@ -278,19 +279,7 @@ $$
 첫 번째 controller는 가장 기본적이고 널리 사용되는
 `PID Controller`로 설정한다.
 
-목표 속도를
-
-$$
-\omega_{\mathrm{ref}}(t)
-$$
-
-실제 motor speed를
-
-$$
-\omega(t)
-$$
-
-라고 하면 Tracking Error는
+목표 속도를 $\omega_{\mathrm{ref}}(t)$, 실제 motor speed를 $\omega(t)$라고 하면 Tracking Error는
 
 $$
 \boxed{
@@ -316,7 +305,7 @@ $$
 
 로 정의한다.
 
-여기서 PID controller의 output \(V(t)\)는
+여기서 PID controller의 output $V(t)$는
 DC motor에 실제로 입력되는 voltage command가 된다.
 
 ---
@@ -335,7 +324,7 @@ Kd
 
 이 세 값을 `PID Gains`라고 한다.
 
-### `Kp` — Proportional Gain
+### Kp — Proportional Gain
 
 현재 error의 크기에 비례해서 반응한다.
 
@@ -354,7 +343,7 @@ Kp × Error 큼
 
 ---
 
-### `Ki` — Integral Gain
+### Ki — Integral Gain
 
 과거부터 누적된 error를 이용한다.
 
@@ -372,7 +361,7 @@ $$
 
 ---
 
-### `Kd` — Derivative Gain
+### Kd — Derivative Gain
 
 현재 error가 얼마나 빠르게 변하는지를 본다.
 
@@ -439,13 +428,7 @@ Optimization algorithm은 motor response graph를 보고
 
 따라서 **좋은 제어가 무엇인지 하나의 numerical score로 표현**해야 한다.
 
-그 값을 본 프로젝트에서는
-
-$$
-\mathcal{J}
-$$
-
-로 표시한다.
+그 값을 본 프로젝트에서는 $\mathcal{J}$로 표시한다.
 
 정의는 다음과 같다.
 
@@ -535,7 +518,7 @@ Error를 제곱하기 때문에 positive error와 negative error가
 
 을 더 나쁘게 평가하고 싶다.
 
-따라서 시간 \(t\)를 곱한 `ITSE`를 사용한다.
+따라서 시간 $t$를 곱한 `ITSE`를 사용한다.
 
 $$
 ITSE
@@ -868,7 +851,7 @@ Optimizer는 이 결과를 기반으로 다음
 
 candidate를 선택한다.
 
-이 과정을 반복하여 \(\mathcal{J}\)가 작은 PID Gains를 찾는다.
+이 과정을 반복하여 $\mathcal{J}$가 작은 PID Gains를 찾는다.
 
 ---
 
@@ -876,7 +859,7 @@ candidate를 선택한다.
 
 v1에서 비교할 Classical Optimization 방법은 다음과 같다.
 
-### `Random Search`
+### Random Search
 
 PID gain search range 안에서
 random한 candidate를 생성한다.
@@ -885,7 +868,7 @@ random한 candidate를 생성한다.
 
 ---
 
-### `Genetic Algorithm`
+### Genetic Algorithm
 
 여러 PID candidate를 population으로 관리한다.
 
@@ -905,7 +888,7 @@ Cost가 작은 candidate가 다음 generation에 살아남도록 한다.
 
 ---
 
-### `Bayesian Optimization`
+### Bayesian Optimization
 
 지금까지 평가한
 
@@ -1055,21 +1038,9 @@ Reward
 
 ## 5.5 Reward Function
 
-PID Optimization에서는
+PID Optimization에서는 $\mathcal{J}\downarrow$를 목표로 한다.
 
-$$
-\mathcal{J}\downarrow
-$$
-
-를 목표로 한다.
-
-RL에서는 반대로
-
-$$
-Reward\uparrow
-$$
-
-를 목표로 한다.
+RL에서는 반대로 $\mathrm{Reward}\uparrow$를 목표로 한다.
 
 Possible Reward v1:
 
@@ -1145,13 +1116,7 @@ $$
 | Optimized PID | TBD | TBD | TBD | TBD | TBD |
 | RL Controller | TBD | TBD | TBD | TBD | TBD |
 
-그래프에서는 각 controller의
-
-$$
-\omega(t)
-$$
-
-response를 동일한 reference input에 대해 비교한다.
+그래프에서는 각 controller의 $\omega(t)$ response를 동일한 reference input에 대해 비교한다.
 
 ---
 
@@ -1312,17 +1277,9 @@ Simulation에서 사용했던 controller를 실제 embedded system으로
 DC Motor 하나의 speed control이 성공하면
 두 개의 motor를 사용하는 `Differential Drive Robot`으로 확장한다.
 
-Left Wheel Speed:
+Left Wheel Speed: $\omega_L$
 
-$$
-\omega_L
-$$
-
-Right Wheel Speed:
-
-$$
-\omega_R
-$$
+Right Wheel Speed: $\omega_R$
 
 이를 이용하면
 
@@ -1390,13 +1347,7 @@ Warm-start QAOA
 Classical Optimizer Comparison
 ```
 
-Continuous variable인
-
-$$
-K_p,\quad K_i,\quad K_d
-$$
-
-를 binary representation으로 바꾼 후
+Continuous variable인 $K_p$, $K_i$, $K_d$를 binary representation으로 바꾼 후
 QUBO 형태로 변환하는 방법을 검토한다.
 
 > **Principle**
