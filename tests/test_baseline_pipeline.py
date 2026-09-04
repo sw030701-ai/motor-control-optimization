@@ -2,6 +2,7 @@ import math
 
 from src.motor.dc_motor import nominal_dc_motor_params
 from src.optimization.cost_function import accepted_baseline, compute_cost
+from src.optimization.pid_optimization import PIDOptimizationConfig, random_search_pid
 from src.simulation.baseline_tuning import BaselineTuningConfig, sequential_baseline_tuning
 from src.simulation.pid_simulation import (
     reference_from_reachable_speed,
@@ -40,3 +41,30 @@ def test_sequential_baseline_tuning_meets_v1_acceptance_criteria():
     assert tuning["final_gains"].K_i == 2.0
     assert tuning["final_gains"].K_d == 0.002
     assert accepted_baseline(record)
+
+
+def test_random_search_pid_returns_best_candidate_from_history():
+    params = nominal_dc_motor_params()
+    config = PIDOptimizationConfig(
+        omega_ref=12.6,
+        V_max=12.0,
+        simulation_time=0.2,
+        dt=0.001,
+    )
+    bounds = {
+        "K_p": (0.02, 0.8),
+        "K_i": (0.05, 2.0),
+        "K_d": (0.0, 0.002),
+    }
+
+    records, best = random_search_pid(
+        motor_params=params,
+        bounds=bounds,
+        n_trials=5,
+        config=config,
+        seed=42,
+    )
+
+    assert len(records) == 5
+    assert best in records
+    assert best["total"] == min(record["total"] for record in records)
