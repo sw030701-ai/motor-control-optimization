@@ -254,15 +254,15 @@ RL Controller는 어떤 장단점이 있는가?
 
 | Item | Value |
 |---|---|
-| $K_{p,baseline}$ | `0.08` |
-| $K_{i,baseline}$ | `0.80` |
+| $K_{p,baseline}$ | `0.80` |
+| $K_{i,baseline}$ | `2.00` |
 | $K_{d,baseline}$ | `0.002` |
-| Reference speed | `120 rad/s` |
-| Overshoot | `0.9176 %` |
+| Reference speed | `12.60 rad/s` |
+| Overshoot | `0.0 %` |
 | Steady-state error | `~0 %` |
-| Settling time | `0.213 s` |
-| Control effort | `0.2583` |
-| $\mathcal{J}_{baseline}$ | `0.03894` |
+| Settling time | `1.322 s` |
+| Control effort | `0.2541` |
+| $\mathcal{J}_{baseline}$ | `0.03818` |
 
 이 값은 [02 PID Baseline Tuning Notebook](../../experiments/02_pid_baseline_tuning.ipynb)에서 계산했다.
 전체 record는 [baseline_pid_tuning_record.md](../../results/tables/baseline_pid_tuning_record.md)에 저장한다.

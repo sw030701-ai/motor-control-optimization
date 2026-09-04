@@ -1,0 +1,7 @@
+Project Symbol,Paper Symbol,Meaning,Value,Unit
+R,R,Armature resistance,0.18644,ohm
+L,L,Armature inductance,0.0063,H
+J_m,J,Rotor inertia,0.013767,kg m^2
+b,b,Viscous friction,0.049813,N m s/rad
+K_t,K_t,Torque constant,0.020375,N m/A
+K_e,K_e,Back-EMF constant,0.020375,V s/rad

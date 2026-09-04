@@ -34,15 +34,24 @@ class DCMotorParams:
         return voltage / (self.K_e + (self.R * self.b / self.K_t))
 
 
+NOMINAL_MOTOR_SOURCE = {
+    "title": "Enhanced DC motor speed regulation using two-degree-of-freedom PID controller tuned by animated oat optimization with simulation and real-time experimental validation",
+    "doi": "10.1177/00202940261442256",
+    "url": "https://journals.sagepub.com/doi/10.1177/00202940261442256",
+    "table": "Table 1. DC motor parameters",
+    "note": "The paper reports J, b, K_e, K_t, R, and L. This project maps J to J_m and b to viscous friction.",
+}
+
+
 def nominal_dc_motor_params():
-    """Return the v1 nominal DC motor parameter set used by baseline experiments."""
+    """Return the literature-based v1 nominal DC motor parameter set."""
     return DCMotorParams(
-        R=2.0,
-        L=0.0005,
-        J_m=1.0e-4,
-        b=1.0e-5,
-        K_t=0.05,
-        K_e=0.05,
+        R=0.18644,
+        L=0.0063,
+        J_m=0.013767,
+        b=0.049813,
+        K_t=0.020375,
+        K_e=0.020375,
     )
 
 

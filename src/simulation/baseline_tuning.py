@@ -11,9 +11,9 @@ from src.simulation.pid_simulation import simulate_pid
 class BaselineTuningConfig:
     omega_ref: float
     V_max: float
-    simulation_time: float = 2.0
-    dt: float = 0.0005
-    settling_target: float = 0.5
+    simulation_time: float = 10.0
+    dt: float = 0.001
+    settling_target: float = 2.0
 
 
 def evaluate_gains(motor_params, gains, config):

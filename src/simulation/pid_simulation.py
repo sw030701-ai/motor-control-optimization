@@ -15,8 +15,8 @@ def _time_vector(simulation_time, dt):
 def simulate_open_loop(
     motor_params,
     voltage,
-    simulation_time=2.0,
-    dt=0.0005,
+    simulation_time=10.0,
+    dt=0.001,
     load_torque=0.0,
     method="rk4",
 ):
@@ -58,8 +58,8 @@ def simulate_pid(
     omega_ref=100.0,
     V_max=12.0,
     vmax=None,
-    simulation_time=2.0,
-    dt=0.0005,
+    simulation_time=10.0,
+    dt=0.001,
     load_torque=0.0,
     method="rk4",
 ):

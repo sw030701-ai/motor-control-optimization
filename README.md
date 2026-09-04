@@ -51,6 +51,8 @@ be extended to mobile robot control.
 
 Baseline PID experiment is available:
 
+- Motor model notebook: `experiments/01_dc_motor_model.ipynb`
 - Notebook: `experiments/02_pid_baseline_tuning.ipynb`
-- Baseline gains: `K_p = 0.08`, `K_i = 0.80`, `K_d = 0.002`
+- Nominal motor source: literature-based parameter set, DOI `10.1177/00202940261442256`
+- Baseline gains: `K_p = 0.80`, `K_i = 2.00`, `K_d = 0.002`
 - Record: `results/tables/baseline_pid_tuning_record.md`

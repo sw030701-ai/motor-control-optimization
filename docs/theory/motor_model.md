@@ -172,16 +172,24 @@ y(t)=\omega(t)
 
 ## 5. Parameter Definitions
 
-| Parameter | Meaning | Unit | Status |
-|---|---|---:|---|
-| $R$ | Armature resistance | $\Omega$ | TBD |
-| $L$ | Armature inductance | H | TBD |
-| $J_m$ | Rotor inertia | kg m$^2$ | TBD |
-| $b$ | Viscous friction coefficient | N m s/rad | TBD |
-| $K_t$ | Torque constant | N m/A | TBD |
-| $K_e$ | Back-EMF constant | V s/rad | TBD |
-| $V_{\max}$ | Maximum voltage | V | TBD |
-| $T_L$ | Load torque | N m | TBD |
+Nominal parameter set은 literature-based value로 지정한다.
+
+| Parameter | Meaning | Unit | v1 Value |
+|---|---|---:|---:|
+| $R$ | Armature resistance | $\Omega$ | `0.18644` |
+| $L$ | Armature inductance | H | `0.0063` |
+| $J_m$ | Rotor inertia | kg m$^2$ | `0.013767` |
+| $b$ | Viscous friction coefficient | N m s/rad | `0.049813` |
+| $K_t$ | Torque constant | N m/A | `0.020375` |
+| $K_e$ | Back-EMF constant | V s/rad | `0.020375` |
+| $V_{\max}$ | Maximum voltage | V | `12.0` |
+| $T_L$ | Load torque | N m | `0` in nominal simulation |
+
+Source:
+
+- G. Yüksek et al., **"Enhanced DC motor speed regulation using two-degree-of-freedom PID controller tuned by animated oat optimization with simulation and real-time experimental validation"**, *Measurement and Control*, DOI: `10.1177/00202940261442256`.
+- Parameter values are taken from `Table 1. DC motor parameters`.
+- The paper's $J$ is mapped to this project's $J_m$.
 
 > **Notation**
 >

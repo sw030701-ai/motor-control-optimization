@@ -43,12 +43,14 @@ Nominal motor parameters는 open-loop validation 이후 확정한다.
 
 | Parameter | Meaning | Value |
 |---|---|---|
-| $R$ | Armature resistance | TBD |
-| $L$ | Armature inductance | TBD |
-| $J_m$ | Rotor inertia | TBD |
-| $b$ | Viscous friction | TBD |
-| $K_t$ | Torque constant | TBD |
-| $K_e$ | Back-EMF constant | TBD |
+| $R$ | Armature resistance | `0.18644` |
+| $L$ | Armature inductance | `0.0063` |
+| $J_m$ | Rotor inertia | `0.013767` |
+| $b$ | Viscous friction | `0.049813` |
+| $K_t$ | Torque constant | `0.020375` |
+| $K_e$ | Back-EMF constant | `0.020375` |
+
+Source: Yüksek et al., `Table 1. DC motor parameters`, DOI `10.1177/00202940261442256`.
 
 ---
 

@@ -190,17 +190,18 @@ v1에서는 안전하게 다음 범위에서 시작한다.
 
 ---
 
-## 6. Outputs
+## 6. v1 Open-Loop Result
 
-Open-loop validation 후 기록할 값은 다음과 같다.
+`01_dc_motor_model.ipynb`에서 nominal plant를 검증한 결과는 다음과 같다.
 
 | Item | Value |
 |---|---|
-| Nominal parameter set | TBD |
-| Test voltage $V_{\mathrm{test}}$ | TBD |
-| Theoretical $\omega_{ss}$ | TBD |
-| Simulated final speed | TBD |
-| Difference | TBD |
-| Selected $\omega_{\mathrm{ref}}$ | TBD |
+| Nominal parameter set | Literature-based DC motor parameter set |
+| Source | Yüksek et al., `Table 1. DC motor parameters` |
+| Test voltage $V_{\mathrm{test}}$ | `12.0 V` |
+| Theoretical $\omega_{ss}$ | `25.2002717 rad/s` |
+| Simulated final speed | `25.2002717 rad/s` |
+| Relative difference | `~0 %` |
+| Selected $\omega_{\mathrm{ref}}$ | `12.60 rad/s` |
 
 이 결과가 정상적이면 [Baseline PID Tuning](baseline_pid_tuning.md)으로 진행한다.

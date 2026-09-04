@@ -41,7 +41,8 @@
 
 | Notebook | Description |
 |---|---|
-| [02 PID Baseline Tuning](../experiments/02_pid_baseline_tuning.ipynb) | Open-loop validation부터 baseline PID gains와 tuning record 저장까지 실행 |
+| [01 DC Motor Model](../experiments/01_dc_motor_model.ipynb) | Literature-based nominal motor parameter 설정, open-loop validation, reference speed 결정 |
+| [02 PID Baseline Tuning](../experiments/02_pid_baseline_tuning.ipynb) | 01에서 정한 plant와 reference를 사용해 baseline PID gains와 tuning record 저장 |
 
 ---
 

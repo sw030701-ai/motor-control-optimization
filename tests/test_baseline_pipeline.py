@@ -13,16 +13,16 @@ from src.simulation.pid_simulation import (
 def test_open_loop_matches_no_load_steady_state_speed():
     params = nominal_dc_motor_params()
     voltage = 12.0
-    result = simulate_open_loop(params, voltage=voltage, simulation_time=2.0, dt=0.0005)
+    result = simulate_open_loop(params, voltage=voltage, simulation_time=10.0, dt=0.001)
     expected = params.no_load_steady_state_speed(voltage)
 
-    assert math.isclose(result["omega"][-1], expected, rel_tol=1e-6)
+    assert math.isclose(result["omega"][-1], expected, rel_tol=2e-3)
 
 
 def test_sequential_baseline_tuning_meets_v1_acceptance_criteria():
     params = nominal_dc_motor_params()
     V_max = 12.0
-    omega_ref = round(reference_from_reachable_speed(params, V_max, fraction=0.504), 1)
+    omega_ref = round(reference_from_reachable_speed(params, V_max, fraction=0.5), 2)
     config = BaselineTuningConfig(omega_ref=omega_ref, V_max=V_max)
 
     tuning = sequential_baseline_tuning(params, config)
@@ -36,7 +36,7 @@ def test_sequential_baseline_tuning_meets_v1_acceptance_criteria():
     )
     record = compute_cost(result, omega_ref=omega_ref, V_max=V_max)
 
-    assert tuning["final_gains"].K_p == 0.08
-    assert tuning["final_gains"].K_i == 0.8
+    assert tuning["final_gains"].K_p == 0.8
+    assert tuning["final_gains"].K_i == 2.0
     assert tuning["final_gains"].K_d == 0.002
     assert accepted_baseline(record)

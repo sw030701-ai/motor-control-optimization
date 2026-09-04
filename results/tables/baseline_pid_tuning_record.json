@@ -1,33 +1,40 @@
 {
-  "K_p_baseline": 0.08,
-  "K_i_baseline": 0.8,
+  "K_p_baseline": 0.8,
+  "K_i_baseline": 2.0,
   "K_d_baseline": 0.002,
-  "reference_speed_rad_s": 120.0,
+  "reference_speed_rad_s": 12.6,
   "V_max": 12.0,
-  "J_baseline": 0.038939859903771516,
-  "J_tracking": 0.0002833984292014931,
-  "J_overshoot": 8.419689368781308e-05,
-  "J_control": 0.2583251441521911,
-  "overshoot_percent": 0.9175886534161867,
-  "steady_state_error_percent": 1.0275525615573619e-08,
-  "settling_time_s": 0.213,
-  "max_abs_voltage": 9.648,
+  "J_baseline": 0.03817651842324222,
+  "J_tracking": 0.00011397909891356004,
+  "J_overshoot": 0.0,
+  "J_control": 0.25405420642596055,
+  "overshoot_percent": 0.0,
+  "steady_state_error_percent": 2.158820987935383e-07,
+  "settling_time_s": 1.322,
+  "max_abs_voltage": 10.24280250329377,
   "saturation_percent": 0.0,
   "accepted_v1": true,
   "motor_parameters": {
-    "R": 2.0,
-    "L": 0.0005,
-    "J_m": 0.0001,
-    "b": 1e-05,
-    "K_t": 0.05,
-    "K_e": 0.05
+    "R": 0.18644,
+    "L": 0.0063,
+    "J_m": 0.013767,
+    "b": 0.049813,
+    "K_t": 0.020375,
+    "K_e": 0.020375
+  },
+  "motor_source": {
+    "title": "Enhanced DC motor speed regulation using two-degree-of-freedom PID controller tuned by animated oat optimization with simulation and real-time experimental validation",
+    "doi": "10.1177/00202940261442256",
+    "url": "https://journals.sagepub.com/doi/10.1177/00202940261442256",
+    "table": "Table 1. DC motor parameters",
+    "note": "The paper reports J, b, K_e, K_t, R, and L. This project maps J to J_m and b to viscous friction."
   },
   "environment": {
     "root": "/Users/seong-uuimac/Documents/Codex/2026-09-03/referenced-chatgpt-conversation-this-is-an-2/work/motor-control-optimization",
     "python": "3.13.1",
     "numpy": "2.2.1",
     "pandas": "2.2.3",
-    "git_commit": "6610a5d5d8dedc361fbe9b5787d34c011d0eb76f",
+    "git_commit": "37b8e926b81fbe57b6138b90283ea289caaaf96b",
     "git_dirty": true
   }
 }

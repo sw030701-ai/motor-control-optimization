@@ -196,10 +196,10 @@ Detailed documents:
 
 | Step | Milestone | Status |
 |---:|---|---|
-| 1 | Nominal DC motor parameters 결정 | TBD |
-| 2 | Motor model 구현 및 open-loop validation | TBD |
-| 3 | Manual PID baseline tuning | TBD |
-| 4 | Cost function 구현 | TBD |
+| 1 | Nominal DC motor parameters 결정 | Done |
+| 2 | Motor model 구현 및 open-loop validation | Done |
+| 3 | Manual PID baseline tuning | Done |
+| 4 | Cost function 구현 | Done |
 | 5 | Random Search 기반 PID optimization | TBD |
 | 6 | Bayesian Optimization 기반 PID optimization | TBD |
 | 7 | Conventional PID vs Optimized PID 비교 | TBD |
