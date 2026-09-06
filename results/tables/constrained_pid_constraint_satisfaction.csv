@@ -1,0 +1,3 @@
+Controller,stable,overshoot <= 10%,SSE <= 2%,settling_time <= 2.0s,saturation < 5%,feasible
+Manual Baseline,True,True,True,True,True,True
+Constrained Classical,True,True,True,True,True,True

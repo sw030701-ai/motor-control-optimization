@@ -4,10 +4,10 @@
   "K_d_baseline": 0.002,
   "reference_speed_rad_s": 12.6,
   "V_max": 12.0,
-  "J_baseline": 0.03817651842324222,
+  "J_baseline": 0.03817651842324221,
   "J_tracking": 0.00011397909891356004,
   "J_overshoot": 0.0,
-  "J_control": 0.25405420642596055,
+  "J_control": 0.2540542064259605,
   "overshoot_percent": 0.0,
   "steady_state_error_percent": 2.158820987935383e-07,
   "settling_time_s": 1.322,
@@ -30,11 +30,11 @@
     "note": "The paper reports J, b, K_e, K_t, R, and L. This project maps J to J_m and b to viscous friction."
   },
   "environment": {
-    "root": "/Users/seong-uuimac/Documents/Codex/2026-09-03/referenced-chatgpt-conversation-this-is-an-2/work/motor-control-optimization",
-    "python": "3.13.1",
-    "numpy": "2.2.1",
-    "pandas": "2.2.3",
-    "git_commit": "37b8e926b81fbe57b6138b90283ea289caaaf96b",
+    "root": "/Users/seong-uuimac/Documents/Codex/2026-09-06/referenced-chatgpt-conversation-this-is-an/repo",
+    "python": "3.13.9",
+    "numpy": "2.3.5",
+    "pandas": "2.3.3",
+    "git_commit": "94987e2b258908c4477adee8d4a1e26da4faf6ae",
     "git_dirty": true
   }
 }

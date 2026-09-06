@@ -14,14 +14,14 @@ Baseline PID의 목적은 optimizer와 RL controller가 비교할 기준점을 �
 ```text
 Manual PID Baseline
       ↓
-Optimized PID
+Constrained Classical PID
       ↓
 RL Controller
 ```
 
 Baseline PID는 다음 질문에 답하기 위한 기준이다.
 
-> Optimization 또는 RL을 사용했을 때, 사람이 직접 tuning한 conventional PID보다 실제로 좋아졌는가?
+> Constrained optimization 또는 RL을 사용했을 때, 사람이 직접 tuning한 conventional PID보다 실제로 좋아졌는가?
 
 ---
 
@@ -35,12 +35,14 @@ Baseline tuning은 먼저 nominal simulation condition에서 수행한다.
 | Load torque | $T_L=0$ |
 | Reference input | Step reference $\omega_{\mathrm{ref}}$ |
 | Voltage limit | $\pm V_{\max}$ |
-| Simulation time | TBD |
-| Sampling time | TBD |
+| Simulation time | `10.0 s` |
+| Sampling time | `0.001 s` |
 | Initial speed | $\omega(0)=0$ |
 | Initial current | $i(0)=0$ |
 
 Nominal parameter set은 [Open-Loop Validation](open_loop_validation.md) 이후 확정한다.
+현재 repo 기준 baseline simulation은 `T=10.0 s`, `dt=0.001 s`,
+`V_max=12.0 V`, `omega_ref=12.60 rad/s`를 사용한다.
 
 ---
 
@@ -161,10 +163,19 @@ Baseline PID는 다음 조건을 만족해야 한다.
 | Sustained oscillation | 없어야 함 |
 | Overshoot | $\le 10\%$ |
 | Steady-state error | $\le 2\%$ |
-| Voltage saturation | Persistent saturation 피하기 |
+| Settling time | $\le 2.0 s$ |
+| Voltage saturation | $<5\%$ of samples |
 
-여기서 `10% overshoot`와 `2% steady-state error`는 v1 target이다.
-나중에 motor parameter나 reference speed가 바뀌면 기준을 조정할 수 있다.
+이 기준은 baseline을 만들 때만 쓰는 임시 설명이 아니라, constrained optimization에서도
+동일하게 적용되는 v1 feasibility policy이다.
+
+- `M_p <= 10%`: 과도응답 overshoot를 너무 크게 허용하지 않기 위한 project-level acceptance target이다. Universal standard가 아니라 v1 engineering choice이며, baseline tuning에서도 사용한 기준이다.
+- `SSE <= 2%`: reference tracking의 정상상태 정확도를 보장하기 위한 최소 조건이다. Optimizer가 voltage 사용량을 줄이기 위해 reference 아래에 머무는 해를 선택하지 못하게 한다.
+- `t_s <= 2.0 s`: 현재 문헌 기반 motor parameter, `10 s` simulation, 그리고 baseline result `t_s=1.322 s`와 일관된 v1 response-speed requirement이다. 예전 초기 toy model에서 쓰던 `0.5 s` 기준이 아니라, 현재 repo의 v1 target은 `2.0 s`이다.
+- `saturation < 5%`: actuator voltage limit에 장시간 붙어 있는 controller를 피하기 위한 조건이다. 순간적인 clipping은 허용하지만 persistent saturation은 제외한다.
+- `Stable / no sustained divergence`: 물리적으로 유효하지 않은 candidate를 제거하기 위한 기본 조건이다. Non-finite response, divergence, settling 실패는 feasible controller로 인정하지 않는다.
+
+나중에 motor parameter나 reference speed가 바뀌면 이 v1 target도 함께 재검토한다.
 
 ---
 
@@ -241,7 +252,7 @@ Optimizer가 좋아 보임
 ```text
 Reasonable manual PID
       ↓
-Optimized PID가 얼마나 개선하는가?
+Constrained Classical PID가 얼마나 개선하는가?
       ↓
 RL Controller는 어떤 장단점이 있는가?
 ```

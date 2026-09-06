@@ -5,11 +5,11 @@
 Main story는 다음 흐름으로 둔다.
 
 ```text
-Manual PID
+Manual Baseline PID
       ↓
-Random Search
+Constrained Classical Optimization
       ↓
-Bayesian Optimization
+Manual Baseline vs Constrained Classical Comparison
 ```
 
 `Genetic Algorithm`은 optional comparison으로 사용한다.
@@ -34,6 +34,7 @@ K_d
 
 ```math
 \min_{K_p,K_i,K_d}\mathcal{J}(K_p,K_i,K_d)
+\quad \text{subject to v1 constraints}
 ```
 
 또는:
@@ -49,6 +50,19 @@ K_d
 ```math
 K_p^*,\quad K_i^*,\quad K_d^*
 ```
+
+v1 constraints는 다음과 같다.
+
+| Constraint | Limit |
+|---|---:|
+| Overshoot $M_p$ | $\le 10\%$ |
+| Steady-state error $SSE$ | $\le 2\%$ |
+| Settling time $t_s$ | $\le 2.0 s$ |
+| Saturation fraction | $<5\%$ |
+| Stability | finite, non-divergent response |
+
+따라서 v1의 핵심 원칙은 **Feasibility first, optimization second**이다.
+Cost가 낮더라도 위 조건을 만족하지 못하면 최종 PID로 선택하지 않는다.
 
 ---
 
@@ -72,6 +86,8 @@ Cost Function
     ↓
 𝓙
     ↓
+Feasibility Check
+    ↓
 Optimizer
 ```
 
@@ -91,7 +107,7 @@ Optimizer는 이 score를 기반으로 다음 candidate를 선택한다.
 
 ## 3. Random Search
 
-`Random Search`는 gain search range 안에서 random candidate를 생성한다.
+`Constrained Random Search`는 gain search range 안에서 random candidate를 생성한다.
 
 ```text
 Kp ∈ [Kp_min, Kp_max]
@@ -102,7 +118,7 @@ Kd ∈ [Kd_min, Kd_max]
 장점:
 
 - 구현이 단순하다.
-- optimizer baseline으로 사용하기 좋다.
+- constrained optimizer baseline으로 사용하기 좋다.
 - tuning range가 적절한지 빠르게 확인할 수 있다.
 
 단점:
@@ -137,7 +153,7 @@ Cost가 작은 candidate가 다음 generation에 살아남도록 한다.
 
 ## 5. Bayesian Optimization
 
-`Bayesian Optimization`은 지금까지 평가한 관계를 이용한다.
+`Constrained Bayesian Optimization`은 지금까지 평가한 관계를 이용한다.
 
 ```math
 (K_p,K_i,K_d)\rightarrow\mathcal{J}
@@ -148,6 +164,10 @@ Cost가 작은 candidate가 다음 generation에 살아남도록 한다.
 > 다음에는 어느 PID gains를 평가하는 것이 유리한가?
 
 를 선택한다.
+
+Bayesian optimizer는 scalar objective가 필요하므로, v1 구현에서는 infeasible candidate에
+큰 penalty를 반환한다. 그러나 최종 controller 선택은 penalty score가 아니라
+feasible candidates 중 실제 $\mathcal{J}$가 가장 작은 후보로 한다.
 
 장점:
 
@@ -163,9 +183,9 @@ v1의 중심 비교는 다음 순서로 진행한다.
 
 ```text
 1. Manual PID baseline을 만든다.
-2. Random Search로 자동 tuning baseline을 만든다.
-3. Bayesian Optimization으로 sample-efficient tuning을 시도한다.
-4. 세 controller의 response와 cost를 비교한다.
+2. Constrained Random Search와 Constrained Bayesian Optimization을 같은 budget으로 실행한다.
+3. Feasible best J가 더 낮은 method를 Constrained Classical PID로 선택한다.
+4. Manual Baseline과 Constrained Classical PID 두 controller의 response와 cost를 비교한다.
 ```
 
 GA는 다음 조건에서 추가한다.

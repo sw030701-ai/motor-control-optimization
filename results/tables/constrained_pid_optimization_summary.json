@@ -1,0 +1,212 @@
+{
+  "selected_method": "Constrained Bayesian Optimization",
+  "comparison": [
+    {
+      "Controller": "Manual Baseline",
+      "K_p": 0.8,
+      "K_i": 2.0,
+      "K_d": 0.002,
+      "J_total": 0.03817651842324221,
+      "J_tracking": 0.00011397909891356004,
+      "J_overshoot": 0.0,
+      "J_control": 0.2540542064259605,
+      "overshoot_percent": 0.0,
+      "settling_time": 1.322,
+      "steady_state_error_percent": 2.158820987935383e-07,
+      "voltage_max_abs": 10.24280250329377,
+      "saturation_percent": 0.0,
+      "omega_final": 12.599999991380132,
+      "feasible": true,
+      "J_improvement_vs_baseline_percent": 0.0
+    },
+    {
+      "Controller": "Constrained Classical",
+      "K_p": 0.2150965903300887,
+      "K_i": 0.996515767737324,
+      "K_d": 0.0008549205356024681,
+      "J_total": 0.03670217885813229,
+      "J_tracking": 0.0006108587109045579,
+      "J_overshoot": 7.49975522750603e-09,
+      "J_control": 0.24223774504433834,
+      "overshoot_percent": 0.008660112717226047,
+      "settling_time": 1.547,
+      "steady_state_error_percent": 4.709601315635299e-10,
+      "voltage_max_abs": 6.001635261197194,
+      "saturation_percent": 0.0,
+      "omega_final": 12.600000000000694,
+      "feasible": true,
+      "J_improvement_vs_baseline_percent": 3.861901571968205
+    }
+  ],
+  "constraint_satisfaction": [
+    {
+      "Controller": "Manual Baseline",
+      "stable": true,
+      "overshoot <= 10%": true,
+      "SSE <= 2%": true,
+      "settling_time <= 2.0s": true,
+      "saturation < 5%": true,
+      "feasible": true
+    },
+    {
+      "Controller": "Constrained Classical",
+      "stable": true,
+      "overshoot <= 10%": true,
+      "SSE <= 2%": true,
+      "settling_time <= 2.0s": true,
+      "saturation < 5%": true,
+      "feasible": true
+    }
+  ],
+  "method_selection": [
+    {
+      "Method": "Constrained Random Search",
+      "feasible_candidates": 45,
+      "best_J_total": 0.036767546958508694,
+      "K_p": 0.25694489552339744,
+      "K_i": 1.0400132222364173,
+      "K_d": 0.006830489532424547,
+      "settling_time": 1.55,
+      "steady_state_error_percent": 4.536054072039925e-10
+    },
+    {
+      "Method": "Constrained Bayesian Optimization",
+      "feasible_candidates": 51,
+      "best_J_total": 0.03670217885813229,
+      "K_p": 0.2150965903300887,
+      "K_i": 0.996515767737324,
+      "K_d": 0.0008549205356024681,
+      "settling_time": 1.547,
+      "steady_state_error_percent": 4.709601315635299e-10
+    }
+  ],
+  "random_search_best": {
+    "K_p": 0.25694489552339744,
+    "K_i": 1.0400132222364173,
+    "K_d": 0.006830489532424547,
+    "total": 0.036767546958508694,
+    "tracking": 0.0005484774035393443,
+    "overshoot_cost": 8.410872884103971e-11,
+    "control": 0.24292306996905272,
+    "omega_final": 12.599999999987226,
+    "omega_max": 12.600115555622065,
+    "omega_min": 0.0003776192681397905,
+    "omega_abs_max": 12.600115555622065,
+    "overshoot": 9.171081116261033e-06,
+    "overshoot_percent": 0.0009171081116261032,
+    "settling_time": 1.55,
+    "steady_state_error": 4.536054072039925e-12,
+    "steady_state_error_percent": 4.536054072039925e-10,
+    "voltage_max_abs": 6.000142103397284,
+    "saturation_fraction": 0.0,
+    "saturation_percent": 0.0,
+    "valid": true,
+    "constraint_stable": true,
+    "constraint_overshoot": true,
+    "constraint_steady_state_error": true,
+    "constraint_settling_time": true,
+    "constraint_saturation": true,
+    "feasible": true,
+    "objective": 0.036767546958508694,
+    "penalized": false,
+    "trial": 10
+  },
+  "bayesian_optimization_best": {
+    "K_p": 0.2150965903300887,
+    "K_i": 0.996515767737324,
+    "K_d": 0.0008549205356024681,
+    "total": 0.03670217885813229,
+    "tracking": 0.0006108587109045579,
+    "overshoot_cost": 7.49975522750603e-09,
+    "control": 0.24223774504433834,
+    "omega_final": 12.600000000000694,
+    "omega_max": 12.60109117420237,
+    "omega_min": 0.000316301139363045,
+    "omega_abs_max": 12.60109117420237,
+    "overshoot": 8.660112717226047e-05,
+    "overshoot_percent": 0.008660112717226047,
+    "settling_time": 1.547,
+    "steady_state_error": 4.709601315635299e-12,
+    "steady_state_error_percent": 4.709601315635299e-10,
+    "voltage_max_abs": 6.001635261197194,
+    "saturation_fraction": 0.0,
+    "saturation_percent": 0.0,
+    "valid": true,
+    "constraint_stable": true,
+    "constraint_overshoot": true,
+    "constraint_steady_state_error": true,
+    "constraint_settling_time": true,
+    "constraint_saturation": true,
+    "feasible": true,
+    "objective": 0.03670217885813229,
+    "penalized": false,
+    "trial": 18
+  },
+  "run_config": {
+    "random_seed": 42,
+    "gain_bounds": {
+      "K_p": [
+        0.2,
+        1.5
+      ],
+      "K_i": [
+        0.5,
+        4.0
+      ],
+      "K_d": [
+        0.0,
+        0.01
+      ]
+    },
+    "gain_bounds_note": "v1 conservative design choice around the manual baseline gains",
+    "evaluation_budget": {
+      "Constrained Random Search": 80,
+      "Constrained Bayesian Optimization": 80
+    },
+    "bayesian_initial_trials": 8,
+    "bayesian_acquisition_pool_size": 1200,
+    "fixed_conditions": {
+      "R": 0.18644,
+      "L": 0.0063,
+      "J_m": 0.013767,
+      "b": 0.049813,
+      "K_t": 0.020375,
+      "K_e": 0.020375,
+      "V_max": 12.0,
+      "omega_ref": 12.6,
+      "simulation_time": 10.0,
+      "dt": 0.001,
+      "load_torque": 0.0
+    },
+    "cost_weights": {
+      "w_tracking": 0.6,
+      "w_overshoot": 0.25,
+      "w_control": 0.15
+    },
+    "v1_constraints": {
+      "overshoot_percent_max": 10.0,
+      "steady_state_error_percent_max": 2.0,
+      "settling_time_max_s": 2.0,
+      "saturation_percent_max_exclusive": 5.0,
+      "stable_no_divergence": true
+    },
+    "environment": {
+      "root": "/Users/seong-uuimac/Documents/Codex/2026-09-06/referenced-chatgpt-conversation-this-is-an/repo",
+      "python": "3.13.9",
+      "numpy": "2.3.5",
+      "pandas": "2.3.3",
+      "git_commit": "94987e2b258908c4477adee8d4a1e26da4faf6ae",
+      "git_dirty": true,
+      "matplotlib": "3.10.6",
+      "sklearn": "1.7.2",
+      "scipy": "1.16.3"
+    }
+  },
+  "motor_source": {
+    "title": "Enhanced DC motor speed regulation using two-degree-of-freedom PID controller tuned by animated oat optimization with simulation and real-time experimental validation",
+    "doi": "10.1177/00202940261442256",
+    "url": "https://journals.sagepub.com/doi/10.1177/00202940261442256",
+    "table": "Table 1. DC motor parameters",
+    "note": "The paper reports J, b, K_e, K_t, R, and L. This project maps J to J_m and b to viscous friction."
+  }
+}

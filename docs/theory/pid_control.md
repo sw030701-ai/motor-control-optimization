@@ -155,7 +155,7 @@ Saturation 상태에서 integral term이 계속 누적되면 `Integral Windup`�
 v1에서는 다음 원칙을 둔다.
 
 - Baseline PID tuning에서는 persistent voltage saturation을 피한다.
-- Optimized PID 평가에서도 control effort cost로 과도한 voltage 사용을 penalty로 둔다.
+- Constrained Classical PID 평가에서도 saturation fraction constraint와 control effort cost로 과도한 voltage 사용을 제한한다.
 - Hardware extension에서는 anti-windup logic을 별도로 검토한다.
 
 ---
@@ -167,7 +167,7 @@ PID controller는 단순하지만 비교 기준으로 매우 중요하다.
 ```text
 Manual PID
       ↓
-Optimized PID
+Constrained Classical PID
       ↓
 RL Controller
 ```

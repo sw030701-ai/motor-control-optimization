@@ -1,9 +1,11 @@
 from dataclasses import dataclass
 
-import numpy as np
-
 from src.controller.pid import PIDGains
-from src.optimization.cost_function import compute_cost
+from src.optimization.cost_function import (
+    V1ConstraintPolicy,
+    compute_cost,
+    is_feasible_v1,
+)
 from src.simulation.pid_simulation import simulate_pid
 
 
@@ -45,6 +47,8 @@ def choose_first(records, predicate):
 
 def sequential_baseline_tuning(motor_params, config):
     """Run a reproducible manual-style sequential PID tuning scan."""
+    policy = V1ConstraintPolicy(settling_time_limit=config.settling_target)
+
     kp_candidates = [0.02, 0.04, 0.06, 0.08, 0.10, 0.15, 0.20, 0.30, 0.50, 0.80]
     kp_records = scan_gain_candidates(
         motor_params,
@@ -68,30 +72,20 @@ def sequential_baseline_tuning(motor_params, config):
     )
     ki_selected = choose_first(
         ki_records,
-        lambda r: (
-            r["steady_state_error"] <= 0.02
-            and r["settling_time"] <= config.settling_target
-            and r["overshoot"] <= 0.10
-            and r["saturation_fraction"] < 0.05
-        ),
+        lambda r: is_feasible_v1(r, policy),
     )
 
     kd_candidates = [0.0, 0.0001, 0.0002, 0.0005, 0.0010, 0.0020]
     kd_records = scan_gain_candidates(
         motor_params,
-        [PIDGains(K_p=ki_selected["K_p"], K_i=ki_selected["K_i"], K_d=kd) for kd in kd_candidates],
+        [
+            PIDGains(K_p=ki_selected["K_p"], K_i=ki_selected["K_i"], K_d=kd)
+            for kd in kd_candidates
+        ],
         config,
     )
     kd_selected = min(
-        [
-            r for r in kd_records
-            if (
-                r["overshoot"] <= 0.10
-                and r["steady_state_error"] <= 0.02
-                and r["saturation_fraction"] < 0.05
-                and np.isfinite(r["settling_time"])
-            )
-        ],
+        [r for r in kd_records if is_feasible_v1(r, policy)],
         key=lambda r: (r["settling_time"], r["overshoot"], r["voltage_max_abs"]),
     )
 

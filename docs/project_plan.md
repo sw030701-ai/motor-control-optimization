@@ -1,7 +1,7 @@
 # AI-Based Motor Control Parameter Optimization
 
 > **Project Plan v1**  
-> DC Motor Speed Control을 시작으로 `PID Optimization`, `Reinforcement Learning`,
+> DC Motor Speed Control을 시작으로 `Constrained PID Optimization`, `Reinforcement Learning`,
 > `Robustness Test`, 실제 `Hardware / Robot Control`까지 확장하는 프로젝트.
 
 ---
@@ -11,9 +11,10 @@
 본 프로젝트의 목표는 `DC Motor Speed Control` 문제에서 controller parameter를
 체계적으로 설계하고 비교하는 것이다.
 
-첫 단계에서는 conventional `PID Controller`를 baseline으로 만들고,
-이후 `Random Search`, `Bayesian Optimization`, 그리고 `Reinforcement Learning`
-기반 controller와 성능을 비교한다.
+첫 단계에서는 conventional `PID Controller`를 manual baseline으로 만들고,
+이후 v1 acceptance criteria를 constraint로 적용한 `Constrained Classical Optimization`
+결과와 비교한다. 이 main story에서는 unconstrained PID optimization을 제외하고,
+feasibility를 보장한 PID gain 후보만 최종 비교 대상으로 사용한다.
 
 최종적으로는 simulation에서 검증한 방법을 실제 motor hardware와 mobile robot으로
 확장할 수 있는 구조를 만드는 것을 목표로 한다.
@@ -25,8 +26,8 @@
 이 프로젝트에서 확인하고 싶은 핵심 질문은 다음과 같다.
 
 1. DC motor speed control에서 manual PID baseline은 어느 정도 성능을 보이는가?
-2. Classical optimization은 PID gains를 manual tuning보다 더 안정적으로 찾을 수 있는가?
-3. Cost function의 구성은 optimized PID의 성능과 control effort에 어떤 영향을 주는가?
+2. Classical optimization은 v1 feasibility를 만족하면서 baseline보다 cost/control effort를 개선할 수 있는가?
+3. Cost function의 구성은 constrained optimized PID의 성능과 control effort에 어떤 영향을 주는가?
 4. Nominal condition에서 찾은 controller는 parameter variation과 disturbance에도 robust한가?
 5. RL controller는 fixed-gain PID optimization과 어떤 차이를 보이는가?
 
@@ -47,6 +48,8 @@ Cost Function Design
       ↓
 Classical Optimization
       ↓
+Manual Baseline vs Constrained Classical Comparison
+      ↓
 Performance Comparison
       ↓
 Reinforcement Learning
@@ -61,9 +64,9 @@ Hardware / Robot Extension
 ```text
 Manual PID
       ↓
-Random Search
+Constrained Random Search
       ↓
-Bayesian Optimization
+Constrained Bayesian Optimization
       ↓
 RL Controller
 ```
@@ -123,8 +126,18 @@ Detailed document:
 
 ### Classical Optimization
 
-Optimizer는 PID gains candidate를 선택하고, simulation 결과로 계산된 cost를 다시 받아
-더 좋은 gains를 찾는다.
+Optimizer는 PID gains candidate를 선택하고, simulation 결과가 v1 constraints를 만족하는지
+먼저 확인한 뒤, feasible candidates 중 cost가 가장 낮은 gains를 찾는다.
+
+v1 formulation:
+
+```math
+\min_{K_p,K_i,K_d}\mathcal{J}(K_p,K_i,K_d)
+\quad
+\text{subject to v1 constraints}
+```
+
+핵심 원칙은 **Feasibility first, optimization second**이다.
 
 Detailed document:
 
@@ -200,9 +213,9 @@ Detailed documents:
 | 2 | Motor model 구현 및 open-loop validation | Done |
 | 3 | Manual PID baseline tuning | Done |
 | 4 | Cost function 구현 | Done |
-| 5 | Random Search 기반 PID optimization | TBD |
-| 6 | Bayesian Optimization 기반 PID optimization | TBD |
-| 7 | Conventional PID vs Optimized PID 비교 | TBD |
+| 5 | Constrained Random Search 기반 PID optimization | Done |
+| 6 | Constrained Bayesian Optimization 기반 PID optimization | Done |
+| 7 | Manual Baseline vs Constrained Classical PID 비교 | Done |
 | 8 | RL controller 실험 | TBD |
 | 9 | Robustness test | TBD |
 | 10 | Hardware / robot extension 검토 | TBD |
@@ -233,11 +246,13 @@ Cost Function
 └─ Control Effort
 
 Main Optimization Story
-├─ Manual PID
-├─ Random Search
-└─ Bayesian Optimization
+├─ Manual Baseline PID
+└─ Constrained Classical PID
+   ├─ Constrained Random Search
+   └─ Constrained Bayesian Optimization
 
 Optional / Extension
+├─ Unconstrained PID Optimization history
 ├─ Genetic Algorithm
 ├─ Reinforcement Learning
 ├─ Hardware / Robot Control

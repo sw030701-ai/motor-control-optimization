@@ -21,8 +21,8 @@
 |---|---|
 | [DC Motor Modeling](theory/motor_model.md) | DC motor electrical / mechanical equation, state-space model, notation |
 | [PID Control Theory](theory/pid_control.md) | Feedback, tracking error, PID equation, gain 역할, saturation |
-| [Cost Function Design](theory/cost_function.md) | Tracking, overshoot, control effort, weighted cost function |
-| [Classical Optimization](theory/optimization.md) | PID gain optimization objective, Random Search, GA, Bayesian Optimization |
+| [Cost Function Design](theory/cost_function.md) | Tracking, overshoot, control effort, constrained objective |
+| [Classical Optimization](theory/optimization.md) | Constrained PID gain optimization, Random Search, Bayesian Optimization |
 | [Reinforcement Learning](theory/reinforcement_learning.md) | RL state, action, reward 개념과 PID optimization과의 관계 |
 
 ---
@@ -33,8 +33,8 @@
 |---|---|
 | [Open-Loop Validation](experiments/open_loop_validation.md) | Motor parameter 선정, open-loop sanity check, reachable reference speed |
 | [Baseline PID Tuning](experiments/baseline_pid_tuning.md) | Conventional / manual PID baseline tuning procedure |
-| [Optimization Plan](experiments/optimization_plan.md) | PID gain search bounds, evaluation budget, 동일 조건 비교 계획 |
-| [Performance Comparison](experiments/performance_comparison.md) | Conventional PID, Optimized PID, RL 비교 table skeleton |
+| [Optimization Plan](experiments/optimization_plan.md) | Constrained PID gain search bounds, evaluation budget, 동일 조건 비교 계획 |
+| [Performance Comparison](experiments/performance_comparison.md) | Manual Baseline vs Constrained Classical 비교 table |
 | [Robustness Test](experiments/robustness_test.md) | Parameter variation, load torque, sensor noise benchmark |
 
 ### Experiment Notebooks
@@ -43,6 +43,7 @@
 |---|---|
 | [01 DC Motor Model](../experiments/01_dc_motor_model.ipynb) | Literature-based nominal motor parameter 설정, open-loop validation, reference speed 결정 |
 | [02 PID Baseline Tuning](../experiments/02_pid_baseline_tuning.ipynb) | 01에서 정한 plant와 reference를 사용해 baseline PID gains와 tuning record 저장 |
+| [03 PID Optimization](../experiments/03_pid_optimization.ipynb) | v1 constraints를 만족하는 Constrained Classical PID를 찾고 baseline과 비교 |
 
 ---
 

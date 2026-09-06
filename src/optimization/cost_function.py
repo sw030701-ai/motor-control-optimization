@@ -1,4 +1,19 @@
+from dataclasses import dataclass
+
 import numpy as np
+
+
+@dataclass(frozen=True)
+class V1ConstraintPolicy:
+    """Project-level v1 feasibility limits shared by baseline and optimization."""
+
+    overshoot_limit: float = 0.10
+    steady_state_error_limit: float = 0.02
+    settling_time_limit: float = 2.0
+    saturation_fraction_limit: float = 0.05
+
+
+V1_CONSTRAINTS = V1ConstraintPolicy()
 
 
 def _integrate(y, x):
@@ -35,6 +50,7 @@ def compute_response_metrics(result, omega_ref, V_max, tolerance=0.02):
     final_window = omega[final_window_start:]
 
     omega_max = float(np.max(omega))
+    omega_min = float(np.min(omega))
     overshoot = max(0.0, (omega_max - omega_ref) / omega_ref)
     steady_state_error = abs(omega_ref - float(np.mean(final_window))) / abs(omega_ref)
     saturation_fraction = float(np.mean(np.abs(voltage) >= 0.99 * V_max))
@@ -42,6 +58,8 @@ def compute_response_metrics(result, omega_ref, V_max, tolerance=0.02):
     return {
         "omega_final": float(omega[-1]),
         "omega_max": omega_max,
+        "omega_min": omega_min,
+        "omega_abs_max": float(np.max(np.abs(omega))),
         "overshoot": float(overshoot),
         "overshoot_percent": float(100.0 * overshoot),
         "settling_time": settling_time(time, omega, omega_ref, tolerance=tolerance),
@@ -101,12 +119,48 @@ def compute_cost(
     }
 
 
-def accepted_baseline(cost_record, overshoot_limit=0.10, steady_state_limit=0.02):
-    """Check v1 baseline acceptance criteria."""
+def v1_constraint_checks(cost_record, policy=V1_CONSTRAINTS):
+    """Return each v1 feasibility check for a candidate response record."""
     settling = cost_record.get("settling_time", np.inf)
-    return (
-        np.isfinite(settling)
-        and cost_record["overshoot"] <= overshoot_limit
-        and cost_record["steady_state_error"] <= steady_state_limit
-        and cost_record["saturation_fraction"] < 0.05
+    stable = (
+        bool(cost_record.get("valid", True))
+        and np.isfinite(cost_record.get("total", np.inf))
+        and np.isfinite(cost_record.get("omega_final", np.inf))
+        and np.isfinite(cost_record.get("omega_max", np.inf))
+        and np.isfinite(cost_record.get("omega_min", np.inf))
+        and np.isfinite(cost_record.get("voltage_max_abs", np.inf))
     )
+
+    return {
+        "stable": stable,
+        "overshoot": stable and cost_record["overshoot"] <= policy.overshoot_limit,
+        "steady_state_error": stable
+        and cost_record["steady_state_error"] <= policy.steady_state_error_limit,
+        "settling_time": stable
+        and np.isfinite(settling)
+        and settling <= policy.settling_time_limit,
+        "saturation": stable
+        and cost_record["saturation_fraction"] < policy.saturation_fraction_limit,
+    }
+
+
+def is_feasible_v1(cost_record, policy=V1_CONSTRAINTS):
+    """Check the shared v1 feasibility constraints."""
+    return all(v1_constraint_checks(cost_record, policy).values())
+
+
+def accepted_baseline(
+    cost_record,
+    overshoot_limit=0.10,
+    steady_state_limit=0.02,
+    settling_time_limit=2.0,
+    saturation_fraction_limit=0.05,
+):
+    """Backward-compatible alias for the shared v1 feasibility criteria."""
+    policy = V1ConstraintPolicy(
+        overshoot_limit=overshoot_limit,
+        steady_state_error_limit=steady_state_limit,
+        settling_time_limit=settling_time_limit,
+        saturation_fraction_limit=saturation_fraction_limit,
+    )
+    return is_feasible_v1(cost_record, policy)

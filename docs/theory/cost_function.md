@@ -1,6 +1,8 @@
 # Cost Function Design
 
 이 문서는 PID optimization과 controller 비교에 사용할 cost function을 정리한다.
+현재 main story에서는 unconstrained cost minimization이 아니라,
+v1 constraints를 만족하는 후보 중에서 cost를 최소화하는 constrained optimization을 사용한다.
 
 Optimizer는 response graph를 보고 "좋다" 또는 "나쁘다"라고 판단할 수 없다.
 따라서 좋은 control response를 하나의 numerical score로 바꿔야 한다.
@@ -196,9 +198,34 @@ PID optimization의 목적은 다음과 같다.
 \min_{K_p,K_i,K_d}\mathcal{J}(K_p,K_i,K_d)
 ```
 
+현재 v1 experiment에서는 이 목적함수를 다음 constrained formulation으로 사용한다.
+
+```math
+\min_{K_p,K_i,K_d}\mathcal{J}(K_p,K_i,K_d)
+\quad
+\text{subject to}
+\quad
+\begin{cases}
+M_p \le 10\%\\
+SSE \le 2\%\\
+t_s \le 2.0s\\
+saturation < 5\%\\
+stable / no sustained divergence
+\end{cases}
+```
+
 즉 optimizer는 여러 PID gains candidate를 simulation에 넣고,
-각 candidate의 response에서 $\mathcal{J}$를 계산한 뒤,
-더 작은 cost를 만드는 gains를 찾는다.
+각 candidate의 response가 v1 constraints를 만족하는지 먼저 확인한다.
+Feasible candidate로 인정된 경우에만 $\mathcal{J}$ 비교에 들어가며,
+최종 controller는 feasible candidates 중 cost가 가장 작은 PID이다.
+
+핵심 원칙은 **Feasibility first, optimization second**이다.
+Acceptance criteria는 baseline에도 constrained optimization에도 동일하게 적용된다.
 
 Baseline PID의 cost $\mathcal{J}_{baseline}$은 optimizer를 실행하기 위한 필수 입력이 아니라,
 optimization 이후 성능을 비교하기 위한 benchmark로 사용한다.
+
+각 제한값은 universal standard가 아니라 현재 repo의 motor parameter, reference speed,
+simulation length, actuator limit에 맞춘 v1 engineering choice이다.
+특히 settling target은 현재 repo 기준 `2.0 s`이며, 초기 toy model에서 쓰던 `0.5 s`
+기준을 사용하지 않는다.
