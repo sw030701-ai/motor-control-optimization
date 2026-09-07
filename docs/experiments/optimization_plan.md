@@ -118,10 +118,10 @@ Feasibility-aware Bayesian Optimization을 optional comparison으로 추가한�
 
 | Method | Summary |
 |---|---|
-| Manual Baseline | Fixed benchmark from `02_pid_baseline_tuning.ipynb` |
-| Constrained Random Search | Explicit feasible-candidate selection |
-| Penalty-based Constrained BO | Infeasible `objective = 1e6`, single GP on penalized objective, EI |
-| Feasibility-aware BO | Separate raw objective GP and constraint GPs, `CEI = EI * P(feasible)` |
+| Manual Baseline | `02_pid_baseline_tuning.ipynb`에서 고정한 benchmark |
+| Constrained Random Search | Feasible candidate를 명시적으로 골라 raw cost 기준으로 선택 |
+| Penalty-based Constrained BO | Infeasible candidate는 `objective = 1e6`, single GP가 penalized objective를 학습, EI 사용 |
+| Feasibility-aware BO | Raw objective GP와 constraint GPs를 분리, `CEI = EI * P(feasible)` 사용 |
 
 자세한 내용은 [Feasibility-Aware BO Methodology Study](feasibility_aware_bo.md)에 둔다.
 

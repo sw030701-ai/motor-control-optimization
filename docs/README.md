@@ -34,7 +34,7 @@
 | [Open-Loop Validation](experiments/open_loop_validation.md) | Motor parameter 선정, open-loop sanity check, reachable reference speed |
 | [Baseline PID Tuning](experiments/baseline_pid_tuning.md) | Conventional / manual PID baseline tuning procedure |
 | [Optimization Plan](experiments/optimization_plan.md) | Constrained PID gain search bounds, evaluation budget, 동일 조건 비교 계획 |
-| [Feasibility-Aware BO Study](experiments/feasibility_aware_bo.md) | Optional branch comparison of penalty BO and feasibility-aware BO |
+| [Feasibility-Aware BO Study](experiments/feasibility_aware_bo.md) | Penalty BO와 feasibility-aware BO를 비교하는 optional branch study |
 | [Performance Comparison](experiments/performance_comparison.md) | Manual Baseline vs Constrained Classical 비교 table |
 | [Robustness Test](experiments/robustness_test.md) | Parameter variation, load torque, sensor noise benchmark |
 
@@ -45,7 +45,7 @@
 | [01 DC Motor Model](../experiments/01_dc_motor_model.ipynb) | Literature-based nominal motor parameter 설정, open-loop validation, reference speed 결정 |
 | [02 PID Baseline Tuning](../experiments/02_pid_baseline_tuning.ipynb) | 01에서 정한 plant와 reference를 사용해 baseline PID gains와 tuning record 저장 |
 | [03 PID Optimization](../experiments/03_pid_optimization.ipynb) | v1 constraints를 만족하는 Constrained Classical PID를 찾고 baseline과 비교 |
-| [04 Feasibility-Aware BO Comparison](../experiments/04_feasibility_aware_bo_comparison.ipynb) | Optional methodology study comparing Random Search, penalty BO, feasibility-aware BO, and Manual Baseline |
+| [04 Feasibility-Aware BO Comparison](../experiments/04_feasibility_aware_bo_comparison.ipynb) | Random Search, penalty BO, feasibility-aware BO, Manual Baseline을 비교하는 optional methodology study |
 
 ---
 

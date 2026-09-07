@@ -8,12 +8,14 @@
 
 ## 1. Compared Methods
 
+비교 대상은 아래 네 가지이다. Method 이름은 notebook/result artifact에서 그대로 쓰기 위해 영어 label을 유지한다.
+
 | Method | Role | Feasibility Handling |
 |---|---|---|
-| Manual Baseline | Fixed benchmark | `02_pid_baseline_tuning.ipynb`에서 고정한 baseline gains를 같은 v1 constraints로 확인 |
-| Constrained Random Search | Simple optimizer baseline | Uniform random candidates를 평가한 뒤 feasible candidates 중 raw total cost 최소값 선택 |
-| Penalty-based Constrained BO | Existing constrained BO baseline | Infeasible candidate에 `objective = 1e6`을 부여하고 single GP가 penalized objective를 학습, EI로 다음 candidate 선택 |
-| Feasibility-aware BO | New optional study | Raw objective GP와 constraint GPs를 분리하고 `CEI = EI * P(feasible)`로 다음 candidate 선택 |
+| Manual Baseline | Fixed benchmark | `02_pid_baseline_tuning.ipynb`에서 고정한 baseline gains를 같은 v1 constraints로 확인한다. |
+| Constrained Random Search | Simple optimizer baseline | Uniform random candidates를 평가한 뒤 feasible candidates 중 raw total cost가 가장 작은 후보를 선택한다. |
+| Penalty-based Constrained BO | Existing constrained BO baseline | Infeasible candidate에 `objective = 1e6`을 부여하고 single GP가 penalized objective를 학습한다. 다음 candidate는 EI로 선택한다. |
+| Feasibility-aware BO | New optional study | Raw objective GP와 constraint GPs를 분리하고 `CEI = EI * P(feasible)`로 다음 candidate를 선택한다. |
 
 ---
 
@@ -27,16 +29,17 @@
 | Steady-state error | `<= 2%` | `g_sse = steady_state_error - 0.02` |
 | Settling time | `<= 2.0 s` | `g_settling = settling_time - 2.0` |
 | Saturation fraction | `< 5%` | `g_saturation = saturation_fraction - 0.05` |
-| Stability / validity | finite valid response | invalid candidates are not eligible for final selection |
+| Stability / validity | finite valid response | invalid candidate는 final selection 대상에서 제외 |
 
-Constraint convention:
+Constraint convention은 다음처럼 둔다.
 
 ```text
 g_i(x) <= 0  -> feasible for that constraint
 g_i(x) > 0   -> violation
 ```
 
-If `settling_time` is infinite, the feasibility-aware implementation clips it to a finite positive violation for the constraint surrogate. Invalid or non-finite simulations are excluded from the raw objective GP and mapped to finite positive constraint violations.
+`settling_time`이 `inf`로 나오면 constraint surrogate가 학습할 수 있도록 finite positive violation으로 clip한다.
+Invalid 또는 non-finite simulation은 raw objective GP 학습에서 제외하고, constraint GP 쪽에는 finite positive violation으로 기록한다.
 
 ---
 
@@ -44,7 +47,7 @@ If `settling_time` is infinite, the feasibility-aware implementation clips it to
 
 ### Penalty-based Constrained BO
 
-The existing constrained BO implementation keeps a single scalar objective:
+기존 constrained BO 구현은 하나의 scalar objective만 사용한다.
 
 ```text
 if candidate is infeasible:
@@ -53,11 +56,12 @@ else:
     objective = raw total cost J
 ```
 
-The GP learns this penalized objective directly, and Expected Improvement chooses the next candidate. Final selection is still made from actually feasible candidates using raw total cost.
+즉 GP는 penalized objective를 직접 학습하고, Expected Improvement가 다음 candidate를 고른다.
+다만 최종 선택은 penalty 값이 아니라 실제 simulation에서 `feasible=True`인 후보 중 raw total cost가 가장 작은 값으로 수행한다.
 
 ### Feasibility-Aware BO
 
-The new branch implementation separates objective quality from constraint satisfaction:
+새 branch 구현은 objective quality와 constraint satisfaction을 분리해서 모델링한다.
 
 ```text
 Objective GP:
@@ -70,32 +74,32 @@ Constraint GPs:
     (Kp, Ki, Kd) -> g_saturation
 ```
 
-For each candidate, the constraint models estimate:
+각 candidate에 대해 constraint model은 다음 확률을 추정한다.
 
 ```math
 P(g_i(x) \le 0)
 ```
 
-Then:
+그리고 constraint별 확률을 곱해 전체 feasibility probability를 계산한다.
 
 ```math
 P_{\mathrm{feasible}}(x) = \prod_i P(g_i(x) \le 0)
 ```
 
-and the acquisition function is:
+Acquisition function은 다음과 같다.
 
 ```math
 CEI(x) = EI(x) \times P_{\mathrm{feasible}}(x)
 ```
 
-The product uses the standard independence approximation across constraint models.
-Final selection is made only from actually simulated `feasible=True` candidates using raw total cost `J`.
+이 product는 constraint model 사이의 independence approximation을 사용한다.
+최종 선택은 surrogate prediction이 아니라 실제로 simulate한 `feasible=True` candidates 중 raw total cost `J`가 가장 작은 후보로 한다.
 
 ---
 
 ## 4. Fixed Comparison Conditions
 
-The comparison notebook uses the same conditions as the existing constrained optimization workflow.
+Comparison notebook은 기존 constrained optimization workflow와 같은 조건을 사용한다.
 
 | Item | Value |
 |---|---:|
@@ -117,17 +121,18 @@ Search bounds:
 | `K_i` | `0.50` | `4.00` |
 | `K_d` | `0.00` | `0.01` |
 
-Random Search, penalty-based BO, and feasibility-aware BO use the same seed and bounds. The two BO methods share the same initial random design.
+Random Search, penalty-based BO, feasibility-aware BO는 같은 seed와 bounds를 사용한다.
+두 BO method는 같은 initial random design을 공유한다.
 
 ---
 
 ## 5. Results Artifacts
 
-The experiment is implemented in:
+실험 notebook은 다음 파일이다.
 
 - `experiments/04_feasibility_aware_bo_comparison.ipynb`
 
-The notebook saves:
+Notebook 실행 결과는 다음 artifact로 저장한다.
 
 - `results/tables/feasibility_aware_bo_comparison.csv`
 - `results/tables/feasibility_aware_bo_comparison.json`
@@ -144,7 +149,7 @@ The notebook saves:
 
 ## 6. Limitations
 
-- `P_feasible` assumes independent constraint-model predictions.
-- Each constraint model is a GP regression surrogate over deterministic simulation metrics.
-- With an `80`-trial budget, conclusions are seed- and budget-dependent.
-- Feasibility-aware BO improves modeling clarity, but it does not guarantee universal dominance over penalty BO or Random Search.
+- `P_feasible`는 constraint-model prediction들이 서로 독립이라고 근사한다.
+- 각 constraint model은 deterministic simulation metric을 대상으로 하는 GP regression surrogate이다.
+- `80` trial budget에서는 결론이 seed와 budget에 영향을 받을 수 있다.
+- Feasibility-aware BO는 feasibility modeling을 더 명확하게 만들지만, penalty BO나 Random Search보다 항상 우월하다는 보장은 아니다.
