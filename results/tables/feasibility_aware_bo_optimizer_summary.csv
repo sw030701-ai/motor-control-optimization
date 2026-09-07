@@ -1,0 +1,4 @@
+Method,feasible_count,feasible_ratio,best_total_J
+Constrained Random Search,45,0.5625,0.036767546958508694
+Penalty-based Constrained BO,51,0.6375,0.03670217885813229
+Feasibility-aware BO,10,0.125,0.03660956722771919

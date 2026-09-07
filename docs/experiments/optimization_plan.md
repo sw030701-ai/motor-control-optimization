@@ -109,6 +109,22 @@ v1에서는 두 constrained classical method를 같은 evaluation budget으로 �
 Bayesian Optimization은 scalar objective가 필요하므로 infeasible candidate에는 큰 penalty를 준다.
 단, 최종 선택은 penalty가 아니라 feasible candidates 중 실제 cost 기준으로 수행한다.
 
+### Optional Methodology Branch: Feasibility-Aware BO
+
+`feature/feasibility-aware-bo` branch에서는 기존 main story를 유지한 채
+Feasibility-aware Bayesian Optimization을 optional comparison으로 추가한다.
+
+이 branch의 비교 대상은 다음 네 가지이다.
+
+| Method | Summary |
+|---|---|
+| Manual Baseline | Fixed benchmark from `02_pid_baseline_tuning.ipynb` |
+| Constrained Random Search | Explicit feasible-candidate selection |
+| Penalty-based Constrained BO | Infeasible `objective = 1e6`, single GP on penalized objective, EI |
+| Feasibility-aware BO | Separate raw objective GP and constraint GPs, `CEI = EI * P(feasible)` |
+
+자세한 내용은 [Feasibility-Aware BO Methodology Study](feasibility_aware_bo.md)에 둔다.
+
 ---
 
 ## 7. Candidate Evaluation Procedure

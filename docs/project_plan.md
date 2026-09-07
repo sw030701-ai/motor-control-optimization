@@ -253,6 +253,7 @@ Main Optimization Story
 
 Optional / Extension
 ├─ Unconstrained PID Optimization history
+├─ Feasibility-aware BO methodology study
 ├─ Genetic Algorithm
 ├─ Reinforcement Learning
 ├─ Hardware / Robot Control
