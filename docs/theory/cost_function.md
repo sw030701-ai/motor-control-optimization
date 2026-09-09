@@ -1,8 +1,8 @@
 # Cost Function Design
 
 이 문서는 PID optimization과 controller 비교에 사용할 cost function을 정리한다.
-현재 main story에서는 unconstrained cost minimization이 아니라,
-v1 constraints를 만족하는 후보 중에서 cost를 최소화하는 constrained optimization을 사용한다.
+현재 main story에서는 v1 constraints를 만족하는 후보 중에서
+cost를 최소화하는 constrained optimization을 사용한다.
 
 Optimizer는 response graph를 보고 "좋다" 또는 "나쁘다"라고 판단할 수 없다.
 따라서 좋은 control response를 하나의 numerical score로 바꿔야 한다.

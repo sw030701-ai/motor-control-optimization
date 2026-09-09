@@ -1,7 +1,7 @@
 # Performance Comparison
 
 이 문서는 `Manual Baseline PID`와 `Constrained Classical PID`의 성능을 같은 조건에서 비교하기 위한 template이다.
-현재 main story에서는 unconstrained PID optimization을 제외한다.
+현재 main story에서는 v1 constraints를 만족한 PID controller만 비교한다.
 
 ---
 

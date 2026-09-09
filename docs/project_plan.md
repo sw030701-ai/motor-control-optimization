@@ -13,8 +13,7 @@
 
 첫 단계에서는 conventional `PID Controller`를 manual baseline으로 만들고,
 이후 v1 acceptance criteria를 constraint로 적용한 `Constrained Classical Optimization`
-결과와 비교한다. 이 main story에서는 unconstrained PID optimization을 제외하고,
-feasibility를 보장한 PID gain 후보만 최종 비교 대상으로 사용한다.
+결과와 비교한다. Feasibility를 보장한 PID gain 후보만 최종 비교 대상으로 사용한다.
 
 최종적으로는 simulation에서 검증한 방법을 실제 motor hardware와 mobile robot으로
 확장할 수 있는 구조를 만드는 것을 목표로 한다.
@@ -252,7 +251,6 @@ Main Optimization Story
    └─ Constrained Bayesian Optimization
 
 Optional / Extension
-├─ Unconstrained PID Optimization history
 ├─ Feasibility-aware BO methodology study
 ├─ Genetic Algorithm
 ├─ Reinforcement Learning

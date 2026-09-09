@@ -2,7 +2,7 @@
 
 이 문서는 현재 main story에서 사용할 PID optimization experiment 조건을 정리한다.
 비교 대상은 `Manual Baseline PID`와 `Constrained Classical PID` 두 controller이다.
-과거 unconstrained optimization 결과는 history로 남기되, 현재 main comparison에는 포함하지 않는다.
+현재 main comparison에는 v1 constraints를 만족한 PID candidate만 포함한다.
 
 ---
 

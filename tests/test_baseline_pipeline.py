@@ -7,9 +7,9 @@ from src.motor.dc_motor import nominal_dc_motor_params
 from src.optimization.cost_function import accepted_baseline, compute_cost
 from src.optimization.pid_optimization import (
     PIDOptimizationConfig,
+    constrained_random_search_pid,
     constraint_violations_v1,
     feasibility_aware_bayesian_optimization_pid,
-    random_search_pid,
 )
 from src.simulation.baseline_tuning import BaselineTuningConfig, sequential_baseline_tuning
 from src.simulation.pid_simulation import (
@@ -51,31 +51,34 @@ def test_sequential_baseline_tuning_meets_v1_acceptance_criteria():
     assert accepted_baseline(record)
 
 
-def test_random_search_pid_returns_best_candidate_from_history():
+def test_constrained_random_search_pid_returns_best_feasible_candidate_from_history():
     params = nominal_dc_motor_params()
     config = PIDOptimizationConfig(
         omega_ref=12.6,
         V_max=12.0,
-        simulation_time=0.2,
+        simulation_time=10.0,
         dt=0.001,
     )
     bounds = {
-        "K_p": (0.02, 0.8),
-        "K_i": (0.05, 2.0),
-        "K_d": (0.0, 0.002),
+        "K_p": (0.20, 1.50),
+        "K_i": (0.50, 4.00),
+        "K_d": (0.00, 0.01),
     }
 
-    records, best = random_search_pid(
+    records, best = constrained_random_search_pid(
         motor_params=params,
         bounds=bounds,
-        n_trials=5,
+        n_trials=8,
         config=config,
         seed=42,
     )
 
-    assert len(records) == 5
+    feasible_records = [record for record in records if record["feasible"]]
+    assert len(records) == 8
+    assert feasible_records
     assert best in records
-    assert best["total"] == min(record["total"] for record in records)
+    assert best["feasible"]
+    assert best["total"] == min(record["total"] for record in feasible_records)
 
 
 def test_constraint_violations_v1_use_nonpositive_feasible_convention():

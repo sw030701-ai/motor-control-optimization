@@ -32,7 +32,7 @@ def _constraint_columns(record, policy):
     return {f"constraint_{name}": bool(value) for name, value in checks.items()}
 
 
-def evaluate_pid_candidate(motor_params, gains, config, enforce_constraints=False):
+def evaluate_pid_candidate(motor_params, gains, config, enforce_constraints=True):
     """Simulate one PID candidate and return cost plus response metrics."""
     try:
         result = simulate_pid(
@@ -155,10 +155,8 @@ def sample_random_gains(rng, bounds):
     )
 
 
-def random_search_pid(
-    motor_params, bounds, n_trials, config, seed=42, constrained=False
-):
-    """Run reproducible Random Search over PID gains."""
+def constrained_random_search_pid(motor_params, bounds, n_trials, config, seed=42):
+    """Run Random Search and return the lowest-cost feasible PID candidate."""
     rng = np.random.default_rng(seed)
     records = []
     for trial in range(1, n_trials + 1):
@@ -167,28 +165,12 @@ def random_search_pid(
             motor_params,
             gains,
             config,
-            enforce_constraints=constrained,
+            enforce_constraints=True,
         )
         record["trial"] = trial
         records.append(record)
-    best = (
-        select_best_feasible(records)
-        if constrained
-        else min(records, key=lambda r: r["total"])
-    )
+    best = select_best_feasible(records)
     return records, best
-
-
-def constrained_random_search_pid(motor_params, bounds, n_trials, config, seed=42):
-    """Run Random Search and return the lowest-cost feasible PID candidate."""
-    return random_search_pid(
-        motor_params=motor_params,
-        bounds=bounds,
-        n_trials=n_trials,
-        config=config,
-        seed=seed,
-        constrained=True,
-    )
 
 
 def _bounds_arrays(bounds):
