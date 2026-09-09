@@ -1,6 +1,7 @@
 # Performance Comparison
 
-이 문서는 `Manual Baseline PID`와 `Constrained Classical PID`의 성능을 같은 조건에서 비교하기 위한 template이다.
+이 문서는 `Manual Baseline PID`, `Constrained Classical PID`,
+`RL Direct Control`의 성능을 같은 조건에서 비교하기 위한 template이다.
 현재 main story에서는 unconstrained PID optimization을 제외한다.
 
 ---
@@ -26,16 +27,17 @@ Same v1 constraints
 
 ## 2. Controllers
 
-비교 대상은 다음 두 controller이다.
+비교 대상은 다음 controller이다.
 
 | Controller | Description |
 |---|---|
 | Manual Baseline | `02_pid_baseline_tuning.ipynb`에서 sequential manual tuning으로 고정한 PID |
 | Constrained Classical | Constrained Random Search와 Constrained Bayesian Optimization 중 feasible best J가 더 낮은 PID |
+| RL Direct Control | TD3 agent가 `[e_t, omega_t, i_t]`를 보고 voltage를 직접 출력하는 controller |
 
 Constrained Random Search와 Constrained Bayesian Optimization은 최종 controller를 고르기 위한
 내부 method 후보이다. 최종 비교표와 response plot에는 `Manual Baseline`과
-선택된 `Constrained Classical`만 표시한다.
+선택된 `Constrained Classical`, `RL Direct Control`을 표시한다.
 
 ---
 
@@ -78,9 +80,12 @@ Cost가 낮더라도 constraints를 만족하지 못하면 final comparison cont
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|
 | Manual Baseline | `0.8000` | `2.0000` | `0.0020` | `0.038177` | `0.000114` | `0.000000` | `0.254054` | `0.000` | `1.322 s` | `0.000000` | `10.243 V` | `0.000` | True |
 | Constrained Classical | `0.2151` | `0.9965` | `0.0009` | `0.036702` | `0.000611` | `0.000000` | `0.242238` | `0.009` | `1.547 s` | `0.000000` | `6.002 V` | `0.000` | True |
+| RL Direct Control | - | - | - | `0.074851` | `0.105121` | `0.000000` | `0.078521` | `0.000` | `inf` | `45.841412` | `12.000 V` | `0.180` | False |
 
 The current constrained classical controller is selected by `03_pid_optimization.ipynb`
 from Constrained Bayesian Optimization.
+The initial TD3 direct-voltage controller is not selected because it does not
+satisfy the v1 feasibility criteria.
 
 ---
 
@@ -90,12 +95,11 @@ from Constrained Bayesian Optimization.
 
 | Plot | Description |
 |---|---|
-| Speed response | `Manual Baseline` vs `Constrained Classical`, with $\omega_{\mathrm{ref}}$ line |
-| Control input | `Manual Baseline` vs `Constrained Classical`, with $\pm V_{\max}$ lines |
-| Constraint satisfaction | 두 controller가 v1 constraints를 모두 만족하는지 확인 |
+| Speed response | `Manual Baseline` vs `Constrained Classical` vs `RL Direct Control`, with $\omega_{\mathrm{ref}}$ line |
+| Control input | Three-controller voltage comparison, with $\pm V_{\max}$ lines |
+| Constraint satisfaction | controller가 v1 constraints를 만족하는지 확인 |
 
-Optimizer cost history는 method-selection evidence로 저장할 수 있지만,
-main performance comparison plot에는 두 최종 controller만 표시한다.
+Optimizer cost history와 RL training history는 method-selection evidence로 저장할 수 있다.
 
 ---
 
@@ -108,3 +112,4 @@ main performance comparison plot에는 두 최종 controller만 표시한다.
 3. Cost가 낮아진 이유는 tracking, overshoot, control effort 중 무엇 때문인가?
 4. 더 낮은 control effort가 느린 settling time과 trade-off를 만드는가?
 5. Nominal condition에서 좋은 controller가 robustness test에서도 좋은가?
+6. RL Direct Control이 feasible하지 않다면, RL을 쓰기 위해 필요한 추가 설계는 무엇인가?

@@ -2,8 +2,8 @@
 
 이 문서는 `Reinforcement Learning`을 motor control 문제에 어떻게 연결할 수 있는지 정리한다.
 
-v1에서는 특정 RL algorithm을 최종 확정하지 않는다.
-먼저 state, action, reward의 개념과 PID optimization과의 차이를 명확히 한다.
+v1에서는 `RL Direct Voltage Control`을 사용한다.
+PID gain을 조정하는 방식이 아니라, state를 보고 매 순간 voltage action을 직접 결정한다.
 
 ---
 
@@ -38,7 +38,7 @@ RL Control
 
 RL agent가 관찰할 수 있는 state는 motor의 현재 상황을 표현해야 한다.
 
-Possible RL state v1:
+RL state v1:
 
 ```math
 s_t
@@ -128,19 +128,24 @@ RL에서는 reward를 키우는 것이 목표이다.
 \mathrm{Reward}\uparrow
 ```
 
-Possible reward v1은 다음과 같이 둘 수 있다.
+Reward v1은 기존 PID optimization cost의 철학을 유지해서
+tracking error, overshoot, control effort를 penalty로 둔다.
 
 ```math
 r_t
 =
 -\alpha\tilde{e}_t^{\,2}
--\beta\tilde{u}_t^{\,2}
+-\beta\max(0,\tilde{\omega}_t-1)^{2}
+-\gamma\tilde{u}_t^{\,2}
 ```
 
 즉:
 
 ```text
 Tracking Error 큼
+→ Reward 감소
+
+Overshoot 큼
 → Reward 감소
 
 Control Input 너무 큼
@@ -173,12 +178,28 @@ RL 실험은 core PID optimization이 완성된 뒤 진행한다.
 
 ## 7. Algorithm Decision
 
-현재 문서에서는 최종 RL algorithm을 확정하지 않는다.
+v1 구현은 `TD3`를 사용한다.
 
-후보는 다음과 같이 열어 둔다.
+선택 이유:
 
-- Discrete action을 쓰는 value-based method
-- Continuous voltage action을 쓰는 policy-gradient method
-- PID gains를 직접 조정하는 meta-control approach
+- Action이 motor voltage이므로 continuous action이다.
+- TD3는 deterministic policy가 voltage를 직접 출력하기 때문에 구조가 단순하다.
+- SAC보다 구현 의존성과 tuning surface가 작아 현재 프로젝트의 1D voltage control에 자연스럽다.
 
-최종 선택은 simulation environment, action space, training stability를 확인한 뒤 결정한다.
+TD3 agent는 다음 구조를 학습한다.
+
+```math
+V_t=\pi_\theta([e_t,\omega_t,i_t])
+```
+
+Environment에서는 항상 다음 actuator limit을 강제한다.
+
+```math
+V_t=\mathrm{clip}(V_t,-12,12)
+```
+
+초기 100-episode TD3 실험에서는 RL Direct Control이 v1 feasibility criteria를
+만족하지 못했다. 특히 target speed까지 올라가지 못해 steady-state error가 크게 남았다.
+따라서 현재 main 결과에서는 RL이 optimized PID를 대체하기보다는,
+작은 학습 budget과 단순 reward 설계에서 direct RL control이 갖는 한계를 보여주는
+comparison 대상으로 해석한다.

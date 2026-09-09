@@ -35,6 +35,7 @@
 | [Baseline PID Tuning](experiments/baseline_pid_tuning.md) | Conventional / manual PID baseline tuning procedure |
 | [Optimization Plan](experiments/optimization_plan.md) | Constrained PID gain search bounds, evaluation budget, 동일 조건 비교 계획 |
 | [Performance Comparison](experiments/performance_comparison.md) | Manual Baseline vs Constrained Classical 비교 table |
+| [RL Direct Voltage Control](experiments/rl_direct_voltage_control.md) | TD3 기반 direct voltage control 실험 조건과 비교 방식 |
 | [Robustness Test](experiments/robustness_test.md) | Parameter variation, load torque, sensor noise benchmark |
 
 ### Experiment Notebooks
@@ -44,6 +45,7 @@
 | [01 DC Motor Model](../experiments/01_dc_motor_model.ipynb) | Literature-based nominal motor parameter 설정, open-loop validation, reference speed 결정 |
 | [02 PID Baseline Tuning](../experiments/02_pid_baseline_tuning.ipynb) | 01에서 정한 plant와 reference를 사용해 baseline PID gains와 tuning record 저장 |
 | [03 PID Optimization](../experiments/03_pid_optimization.ipynb) | v1 constraints를 만족하는 Constrained Classical PID를 찾고 baseline과 비교 |
+| [04 RL Direct Voltage Control](../experiments/04_rl_direct_voltage_control.py) | TD3 agent가 `[e_t, omega_t, i_t]`를 보고 voltage를 직접 출력하고 PID controller들과 비교 |
 
 ---
 
