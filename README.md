@@ -73,6 +73,16 @@ TD3를 사용한 이유는 action이 1차원 continuous voltage이기 때문이�
 이 문제에서는 deterministic policy에 exploration noise를 더하는 TD3 구조가
 SAC보다 구현이 단순하고 현재 프로젝트 규모에 더 자연스럽다.
 
+현재 RL run은 training과 evaluation을 분리한다.
+Training episode에서는 exploration noise와 network update를 켜고 10초 simulation을 사용한다.
+매 10 episode마다 evaluation을 수행할 때는 deterministic action을 사용하며
+network update를 하지 않는 10초 simulation을 사용한다.
+Best checkpoint는 기존 `compute_cost()`의 `J_total`이 가장 낮은 deterministic
+evaluation policy로 선택하고, 최종 comparison도 마지막 episode가 아니라
+이 best checkpoint를 사용한다.
+Actor/critic learning rate는 초기 `3e-4`에서 각각 `1e-4`로 낮춰
+후반 policy update가 크게 흔들리는 현상을 줄이도록 했다.
+
 notebook에서 결과 표와 response plot을 확인할 수 있다.
 
 ```bash
@@ -94,8 +104,11 @@ pip install torch
 script는 다음 결과 파일을 저장한다.
 
 - `results/tables/rl_direct_voltage_training_history.csv`
+- `results/tables/rl_direct_voltage_eval_history.csv`
 - `results/tables/rl_direct_voltage_evaluation.csv`
 - `results/tables/direct_voltage_rl_comparison.csv`
+- `results/models/td3_direct_voltage_best_actor.pt`
+- `results/models/td3_direct_voltage_last_actor.pt`
 - `results/figures/rl_direct_voltage_speed_comparison.png`
 - `results/figures/rl_direct_voltage_control_comparison.png`
 

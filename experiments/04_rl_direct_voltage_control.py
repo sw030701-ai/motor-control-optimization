@@ -43,10 +43,13 @@ RESULT_MODEL_DIR = PROJECT_ROOT / "results" / "models"
 BASELINE_RECORD_PATH = RESULT_TABLE_DIR / "baseline_pid_tuning_record.csv"
 OPTIMIZED_RECORD_PATH = RESULT_TABLE_DIR / "constrained_pid_optimization_summary.csv"
 TRAINING_HISTORY_PATH = RESULT_TABLE_DIR / "rl_direct_voltage_training_history.csv"
+EVAL_HISTORY_PATH = RESULT_TABLE_DIR / "rl_direct_voltage_eval_history.csv"
 RL_EVALUATION_PATH = RESULT_TABLE_DIR / "rl_direct_voltage_evaluation.csv"
 COMPARISON_PATH = RESULT_TABLE_DIR / "direct_voltage_rl_comparison.csv"
 SUMMARY_PATH = RESULT_TABLE_DIR / "rl_direct_voltage_summary.json"
-ACTOR_PATH = RESULT_MODEL_DIR / "td3_direct_voltage_actor.pt"
+BEST_ACTOR_PATH = RESULT_MODEL_DIR / "td3_direct_voltage_best_actor.pt"
+LAST_ACTOR_PATH = RESULT_MODEL_DIR / "td3_direct_voltage_last_actor.pt"
+CHECKPOINT_METRIC = "J_total"
 
 
 def _json_safe(value):
@@ -130,7 +133,26 @@ def _evaluate_pid_controller(name, gains, params, omega_ref, V_max, simulation_t
     return _controller_row(name, result, omega_ref, V_max, gains=gains), result
 
 
-def _load_or_train_agent(args, params, train_env_config):
+def _evaluate_agent(agent, params, eval_env_config, episode=None):
+    eval_env = DirectVoltageMotorEnv(params, config=eval_env_config)
+
+    def td3_policy(observation):
+        normalized = eval_env.normalize_observation(observation)
+        return agent.select_action(normalized)[0]
+
+    result = simulate_direct_voltage_policy(params, td3_policy, config=eval_env_config)
+    row = _controller_row(
+        "RL Direct Control",
+        result,
+        eval_env_config.omega_ref,
+        eval_env_config.V_max,
+    )
+    if episode is not None:
+        row["episode"] = episode
+    return row, result
+
+
+def _load_or_train_agent(args, params, train_env_config, eval_env_config):
     from src.rl.td3 import TD3Agent, TD3Config, train_td3_direct_voltage
 
     td3_config = TD3Config(
@@ -139,34 +161,81 @@ def _load_or_train_agent(args, params, train_env_config):
         start_steps=args.start_steps,
         exploration_noise=args.exploration_noise,
         seed=args.seed,
+        actor_lr=args.actor_lr,
+        critic_lr=args.critic_lr,
     )
 
     if args.evaluate_only:
-        if not ACTOR_PATH.exists():
+        if not BEST_ACTOR_PATH.exists():
             raise FileNotFoundError(
-                f"No saved actor found at {ACTOR_PATH}. Run without --evaluate-only first."
+                f"No saved best actor found at {BEST_ACTOR_PATH}. Run without --evaluate-only first."
             )
-        return TD3Agent.load_actor(ACTOR_PATH), []
+        metadata = TD3Agent.load_actor_metadata(BEST_ACTOR_PATH)
+        return TD3Agent.load_actor(BEST_ACTOR_PATH), [], [], metadata
 
     env = DirectVoltageMotorEnv(params, config=train_env_config)
 
     def progress(record):
         if record["episode"] == 1 or record["episode"] % args.log_every == 0:
+            eval_text = ""
+            if f"eval_{CHECKPOINT_METRIC}" in record:
+                eval_text = (
+                    f" eval_{CHECKPOINT_METRIC}="
+                    f"{record[f'eval_{CHECKPOINT_METRIC}']:.5f}"
+                )
             print(
                 f"episode={record['episode']:4d} "
                 f"reward={record['episode_reward']:10.3f} "
                 f"final_error={record['final_error']:8.4f}"
+                f"{eval_text}"
             )
 
-    agent, history = train_td3_direct_voltage(
+    def deterministic_evaluation(agent, episode):
+        row, _ = _evaluate_agent(agent, params, eval_env_config, episode=episode)
+        return {
+            key: value
+            for key, value in row.items()
+            if key not in {"Controller", "K_p", "K_i", "K_d"}
+        }
+
+    agent, history, evaluation_history, best_evaluation = train_td3_direct_voltage(
         env=env,
         episodes=args.episodes,
         config=td3_config,
         progress_callback=progress,
+        evaluation_callback=deterministic_evaluation,
+        eval_every=args.eval_every,
+        checkpoint_path=BEST_ACTOR_PATH,
+        checkpoint_metric=CHECKPOINT_METRIC,
     )
     RESULT_MODEL_DIR.mkdir(parents=True, exist_ok=True)
-    agent.save_actor(ACTOR_PATH)
-    return agent, history
+    agent.save_actor(
+        LAST_ACTOR_PATH,
+        metadata={
+            "episodes": args.episodes,
+            "note": "Last training actor; final comparison uses the best deterministic evaluation checkpoint.",
+        },
+    )
+    if best_evaluation is None:
+        agent.save_actor(
+            BEST_ACTOR_PATH,
+            metadata={
+                "checkpoint_episode": args.episodes,
+                "checkpoint_metric": CHECKPOINT_METRIC,
+                "checkpoint_score": None,
+                "selection_rule": f"lowest deterministic evaluation {CHECKPOINT_METRIC}",
+                "note": "No scheduled evaluation was run; saved final actor as fallback.",
+            },
+        )
+        best_evaluation = {
+            "checkpoint_episode": args.episodes,
+            "checkpoint_metric": CHECKPOINT_METRIC,
+            "checkpoint_score": None,
+        }
+
+    best_agent = TD3Agent.load_actor(BEST_ACTOR_PATH)
+    best_metadata = TD3Agent.load_actor_metadata(BEST_ACTOR_PATH)
+    return best_agent, history, evaluation_history, best_metadata
 
 
 def _plot_response(results_by_controller, omega_ref, V_max):
@@ -200,6 +269,45 @@ def _plot_response(results_by_controller, omega_ref, V_max):
     plt.close(fig)
 
 
+def _plot_training_history(history, evaluation_history):
+    if not history:
+        return
+    RESULT_FIGURE_DIR.mkdir(parents=True, exist_ok=True)
+    history_df = pd.DataFrame(history)
+
+    fig, axes = plt.subplots(2, 1, figsize=(9, 7), sharex=True)
+    axes[0].plot(
+        history_df["episode"],
+        history_df["episode_reward"],
+        label="training reward",
+    )
+    axes[0].set_ylabel("Episode reward")
+    axes[0].grid(True, alpha=0.3)
+    axes[0].legend()
+
+    axes[1].plot(
+        history_df["episode"],
+        history_df["final_error"],
+        label="training final error",
+    )
+    if evaluation_history:
+        eval_df = pd.DataFrame(evaluation_history)
+        axes[1].plot(
+            eval_df["episode"],
+            eval_df[CHECKPOINT_METRIC],
+            marker="o",
+            label=f"deterministic eval {CHECKPOINT_METRIC}",
+        )
+    axes[1].set_xlabel("Episode")
+    axes[1].grid(True, alpha=0.3)
+    axes[1].legend()
+
+    fig.suptitle("TD3 Training History and Deterministic Evaluations")
+    fig.tight_layout()
+    fig.savefig(RESULT_FIGURE_DIR / "rl_direct_voltage_training_history.png", dpi=160)
+    plt.close(fig)
+
+
 def run(args):
     RESULT_TABLE_DIR.mkdir(parents=True, exist_ok=True)
     params = nominal_dc_motor_params()
@@ -218,18 +326,27 @@ def run(args):
         dt=args.eval_dt,
     )
 
-    agent, history = _load_or_train_agent(args, params, train_env_config)
+    agent, history, evaluation_history, best_metadata = _load_or_train_agent(
+        args,
+        params,
+        train_env_config,
+        eval_env_config,
+    )
     if history:
         pd.DataFrame(history).to_csv(TRAINING_HISTORY_PATH, index=False)
+        _plot_training_history(history, evaluation_history)
+    if evaluation_history:
+        pd.DataFrame(evaluation_history).to_csv(EVAL_HISTORY_PATH, index=False)
 
-    eval_env = DirectVoltageMotorEnv(params, config=eval_env_config)
-
-    def td3_policy(observation):
-        normalized = eval_env.normalize_observation(observation)
-        return agent.select_action(normalized)[0]
-
-    rl_result = simulate_direct_voltage_policy(params, td3_policy, config=eval_env_config)
-    rl_row = _controller_row("RL Direct Control", rl_result, omega_ref, V_max)
+    rl_row, rl_result = _evaluate_agent(agent, params, eval_env_config)
+    rl_row.update(
+        {
+            "checkpoint_type": "best_deterministic_eval",
+            "checkpoint_metric": best_metadata.get("checkpoint_metric", CHECKPOINT_METRIC),
+            "checkpoint_score": best_metadata.get("checkpoint_score"),
+            "checkpoint_episode": best_metadata.get("checkpoint_episode"),
+        }
+    )
     pd.DataFrame([rl_row]).to_csv(RL_EVALUATION_PATH, index=False)
 
     rows = []
@@ -291,13 +408,37 @@ def run(args):
             "V_max": V_max,
             "train_dt": args.train_dt,
             "eval_dt": args.eval_dt,
+            "train_simulation_time": args.train_simulation_time,
             "eval_simulation_time": args.eval_simulation_time,
+        },
+        "training_evaluation_split": {
+            "training": "exploration noise and network updates are enabled",
+            "evaluation": "deterministic action selection with exploration and network updates disabled",
+            "eval_every_episodes": args.eval_every,
+        },
+        "learning_rates": {
+            "previous_actor_lr": 3e-4,
+            "previous_critic_lr": 3e-4,
+            "actor_lr": args.actor_lr,
+            "critic_lr": args.critic_lr,
+            "reason": (
+                "Both learning rates were reduced to make actor and critic updates "
+                "more conservative after observed training instability."
+            ),
+        },
+        "best_checkpoint": {
+            "path": str(BEST_ACTOR_PATH),
+            "selection_metric": CHECKPOINT_METRIC,
+            "selection_rule": f"lowest deterministic evaluation {CHECKPOINT_METRIC}",
+            "metadata": best_metadata,
         },
         "outputs": {
             "training_history": str(TRAINING_HISTORY_PATH),
+            "eval_history": str(EVAL_HISTORY_PATH),
             "rl_evaluation": str(RL_EVALUATION_PATH),
             "comparison": str(COMPARISON_PATH),
-            "actor": str(ACTOR_PATH),
+            "best_actor": str(BEST_ACTOR_PATH),
+            "last_actor": str(LAST_ACTOR_PATH),
         },
         "comparison": comparison.to_dict(orient="records"),
     }
@@ -307,19 +448,23 @@ def run(args):
     print("\nSaved RL comparison:")
     print(comparison)
     print(f"\nComparison table: {COMPARISON_PATH}")
-    print(f"Saved actor: {ACTOR_PATH}")
+    print(f"Best actor checkpoint: {BEST_ACTOR_PATH}")
+    print(f"Best checkpoint criterion: lowest deterministic evaluation {CHECKPOINT_METRIC}")
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Train and evaluate TD3 direct voltage control.")
     parser.add_argument("--episodes", type=int, default=30)
-    parser.add_argument("--train-simulation-time", type=float, default=3.0)
+    parser.add_argument("--train-simulation-time", type=float, default=10.0)
     parser.add_argument("--train-dt", type=float, default=0.005)
     parser.add_argument("--eval-simulation-time", type=float, default=10.0)
     parser.add_argument("--eval-dt", type=float, default=0.001)
     parser.add_argument("--batch-size", type=int, default=128)
     parser.add_argument("--start-steps", type=int, default=2_000)
     parser.add_argument("--exploration-noise", type=float, default=2.0)
+    parser.add_argument("--actor-lr", type=float, default=1e-4)
+    parser.add_argument("--critic-lr", type=float, default=1e-4)
+    parser.add_argument("--eval-every", type=int, default=10)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--log-every", type=int, default=5)
     parser.add_argument("--evaluate-only", action="store_true")

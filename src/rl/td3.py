@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from pathlib import Path
 
 import numpy as np
 
@@ -30,6 +31,10 @@ class TD3Config:
     start_steps: int = 2_000
     hidden_dim: int = 128
     seed: int = 42
+    # Reduced from the original 3e-4 for both networks to make TD3 policy
+    # updates more conservative on this small motor-control problem.
+    actor_lr: float = 1e-4
+    critic_lr: float = 1e-4
 
 
 class ReplayBuffer:
@@ -138,7 +143,10 @@ class TD3Agent:
             self.config.hidden_dim,
         ).to(self.device)
         self.actor_target.load_state_dict(self.actor.state_dict())
-        self.actor_optimizer = torch.optim.Adam(self.actor.parameters(), lr=3e-4)
+        self.actor_optimizer = torch.optim.Adam(
+            self.actor.parameters(),
+            lr=self.config.actor_lr,
+        )
 
         self.critic = Critic(
             self.config.state_dim,
@@ -151,7 +159,10 @@ class TD3Agent:
             self.config.hidden_dim,
         ).to(self.device)
         self.critic_target.load_state_dict(self.critic.state_dict())
-        self.critic_optimizer = torch.optim.Adam(self.critic.parameters(), lr=3e-4)
+        self.critic_optimizer = torch.optim.Adam(
+            self.critic.parameters(),
+            lr=self.config.critic_lr,
+        )
         self.total_it = 0
 
     def select_action(self, state):
@@ -222,11 +233,14 @@ class TD3Agent:
             "actor_loss": actor_loss_value,
         }
 
-    def save_actor(self, path):
+    def save_actor(self, path, metadata=None):
+        path = Path(path)
+        path.parent.mkdir(parents=True, exist_ok=True)
         torch.save(
             {
                 "config": self.config.__dict__,
                 "state_dict": self.actor.state_dict(),
+                "metadata": metadata or {},
             },
             path,
         )
@@ -239,9 +253,31 @@ class TD3Agent:
         agent.actor_target.load_state_dict(payload["state_dict"])
         return agent
 
+    @staticmethod
+    def load_actor_metadata(path):
+        payload = torch.load(path, map_location="cpu")
+        return payload.get("metadata", {})
 
-def train_td3_direct_voltage(env, episodes=100, config=None, progress_callback=None):
-    """Train TD3 against DirectVoltageMotorEnv and return the agent plus episode history."""
+
+def train_td3_direct_voltage(
+    env,
+    episodes=100,
+    config=None,
+    progress_callback=None,
+    evaluation_callback=None,
+    eval_every=10,
+    checkpoint_path=None,
+    checkpoint_metric="J_total",
+):
+    """
+    Train TD3 against DirectVoltageMotorEnv.
+
+    Training uses exploration noise and network updates. When an
+    evaluation_callback is supplied, evaluation is run without exploration or
+    network updates; the best checkpoint is selected by the lowest
+    checkpoint_metric. For this project the checkpoint metric is J_total from
+    the shared compute_cost() objective.
+    """
     td3_config = config or TD3Config(max_action=env.config.V_max)
     agent = TD3Agent(td3_config)
     replay_buffer = ReplayBuffer(
@@ -252,6 +288,8 @@ def train_td3_direct_voltage(env, episodes=100, config=None, progress_callback=N
     )
     rng = np.random.default_rng(td3_config.seed)
     history = []
+    evaluation_history = []
+    best_evaluation = None
     total_steps = 0
 
     for episode in range(1, episodes + 1):
@@ -295,8 +333,54 @@ def train_td3_direct_voltage(env, episodes=100, config=None, progress_callback=N
             "final_error": float(info["error"]),
             **last_losses,
         }
+        should_evaluate = (
+            evaluation_callback is not None
+            and eval_every > 0
+            and (episode % eval_every == 0 or episode == episodes)
+        )
+        if should_evaluate:
+            evaluation = dict(evaluation_callback(agent, episode))
+            evaluation.setdefault("episode", episode)
+            evaluation["checkpoint_metric"] = checkpoint_metric
+            score = float(evaluation[checkpoint_metric])
+            evaluation["checkpoint_score"] = score
+            is_best = np.isfinite(score) and (
+                best_evaluation is None
+                or score < float(best_evaluation["checkpoint_score"])
+            )
+            if is_best:
+                for previous_evaluation in evaluation_history:
+                    previous_evaluation["is_best_checkpoint"] = False
+            evaluation["is_best_checkpoint"] = is_best
+            evaluation_history.append(evaluation)
+
+            record[f"eval_{checkpoint_metric}"] = score
+            if is_best:
+                best_evaluation = evaluation.copy()
+                if checkpoint_path is not None:
+                    agent.save_actor(
+                        checkpoint_path,
+                        metadata={
+                            "checkpoint_episode": episode,
+                            "checkpoint_metric": checkpoint_metric,
+                            "checkpoint_score": score,
+                            "selection_rule": (
+                                f"lowest deterministic evaluation {checkpoint_metric}"
+                            ),
+                            "evaluation": evaluation,
+                        },
+                    )
+
+        if best_evaluation is not None:
+            record["best_eval_episode"] = int(best_evaluation["episode"])
+            record[f"best_eval_{checkpoint_metric}"] = float(
+                best_evaluation["checkpoint_score"]
+            )
+
         history.append(record)
         if progress_callback is not None:
             progress_callback(record)
 
+    if evaluation_callback is not None:
+        return agent, history, evaluation_history, best_evaluation
     return agent, history

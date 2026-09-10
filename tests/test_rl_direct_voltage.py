@@ -1,6 +1,7 @@
 import math
 
 import numpy as np
+import pytest
 
 from src.motor.dc_motor import nominal_dc_motor_params
 from src.optimization.cost_function import compute_cost
@@ -62,3 +63,66 @@ def test_direct_voltage_policy_result_reuses_cost_metrics_shape():
 
     assert {"time", "omega", "current", "voltage", "error"}.issubset(result)
     assert {"total", "tracking", "overshoot_cost", "control"}.issubset(cost)
+
+
+def test_td3_config_uses_reduced_actor_critic_learning_rates():
+    pytest.importorskip("torch")
+
+    from src.rl.td3 import TD3Agent, TD3Config
+
+    config = TD3Config()
+    agent = TD3Agent(config)
+
+    assert config.actor_lr == 1e-4
+    assert config.critic_lr == 1e-4
+    assert agent.actor_optimizer.param_groups[0]["lr"] == config.actor_lr
+    assert agent.critic_optimizer.param_groups[0]["lr"] == config.critic_lr
+
+
+def test_td3_training_saves_best_deterministic_eval_checkpoint(tmp_path):
+    pytest.importorskip("torch")
+
+    from src.rl.td3 import TD3Agent, TD3Config, train_td3_direct_voltage
+
+    params = nominal_dc_motor_params()
+    env_config = DirectVoltageEnvConfig(
+        omega_ref=12.6,
+        V_max=12.0,
+        simulation_time=0.001,
+        dt=0.001,
+    )
+    env = DirectVoltageMotorEnv(params, config=env_config)
+    checkpoint_path = tmp_path / "best_actor.pt"
+
+    def deterministic_evaluation(_agent, episode):
+        return {
+            "J_total": 2.0 if episode == 1 else 1.0,
+            "steady_state_error_percent": 0.0,
+        }
+
+    _, history, evaluation_history, best_evaluation = train_td3_direct_voltage(
+        env,
+        episodes=2,
+        config=TD3Config(
+            max_action=env_config.V_max,
+            batch_size=1,
+            start_steps=0,
+            hidden_dim=8,
+            actor_lr=1e-4,
+            critic_lr=1e-4,
+        ),
+        evaluation_callback=deterministic_evaluation,
+        eval_every=1,
+        checkpoint_path=checkpoint_path,
+        checkpoint_metric="J_total",
+    )
+
+    metadata = TD3Agent.load_actor_metadata(checkpoint_path)
+
+    assert checkpoint_path.exists()
+    assert len(history) == 2
+    assert len(evaluation_history) == 2
+    assert best_evaluation["episode"] == 2
+    assert metadata["checkpoint_metric"] == "J_total"
+    assert metadata["checkpoint_episode"] == 2
+    assert metadata["selection_rule"] == "lowest deterministic evaluation J_total"
