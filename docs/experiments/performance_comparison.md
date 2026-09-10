@@ -29,7 +29,7 @@ Same v1 constraints
 
 비교 대상은 다음 controller이다.
 
-| Controller | Description |
+| Controller | 설명 |
 |---|---|
 | Manual Baseline | `02_pid_baseline_tuning.ipynb`에서 sequential manual tuning으로 고정한 PID |
 | Constrained Classical | Constrained Random Search와 Constrained Bayesian Optimization 중 feasible best J가 더 낮은 PID |
@@ -82,10 +82,10 @@ Cost가 낮더라도 constraints를 만족하지 못하면 final comparison cont
 | Constrained Classical | `0.2151` | `0.9965` | `0.0009` | `0.036702` | `0.000611` | `0.000000` | `0.242238` | `0.009` | `1.547 s` | `0.000000` | `6.002 V` | `0.000` | True |
 | RL Direct Control | - | - | - | `0.074851` | `0.105121` | `0.000000` | `0.078521` | `0.000` | `inf` | `45.841412` | `12.000 V` | `0.180` | False |
 
-The current constrained classical controller is selected by `03_pid_optimization.ipynb`
-from Constrained Bayesian Optimization.
-The initial TD3 direct-voltage controller is not selected because it does not
-satisfy the v1 feasibility criteria.
+현재 Constrained Classical controller는 `03_pid_optimization.ipynb`에서
+Constrained Bayesian Optimization 결과로 선택되었다.
+초기 TD3 direct-voltage controller는 v1 feasibility criteria를 만족하지 못했기 때문에
+최종 controller로 선택하지 않는다.
 
 ---
 
@@ -93,10 +93,10 @@ satisfy the v1 feasibility criteria.
 
 최종 report에서는 다음 plot을 비교한다.
 
-| Plot | Description |
+| Plot | 설명 |
 |---|---|
-| Speed response | `Manual Baseline` vs `Constrained Classical` vs `RL Direct Control`, with $\omega_{\mathrm{ref}}$ line |
-| Control input | Three-controller voltage comparison, with $\pm V_{\max}$ lines |
+| Speed response | `Manual Baseline`, `Constrained Classical`, `RL Direct Control`의 speed response와 $\omega_{\mathrm{ref}}$ line |
+| Control input | 세 controller의 voltage response와 $\pm V_{\max}$ line |
 | Constraint satisfaction | controller가 v1 constraints를 만족하는지 확인 |
 
 Optimizer cost history와 RL training history는 method-selection evidence로 저장할 수 있다.

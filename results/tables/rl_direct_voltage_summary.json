@@ -1,13 +1,13 @@
 {
   "algorithm": "TD3",
-  "algorithm_reason": "TD3 was used because direct motor voltage is a continuous one-dimensional action, making a deterministic actor-critic policy simpler than SAC for this v1 experiment.",
+  "algorithm_reason": "direct motor voltage는 1차원 continuous action이므로 TD3를 사용했다. 이 v1 실험에서는 SAC보다 deterministic policy 기반 TD3가 구현과 tuning 부담이 작다.",
   "state": [
     "e_t",
     "omega_t",
     "i_t"
   ],
-  "action": "V_t clipped to [-12 V, 12 V]",
-  "reward": {
+  "action": "V_t를 [-V_max, V_max] 범위로 clip",
+  "reward_weights": {
     "tracking": 0.6,
     "overshoot": 0.25,
     "control_effort": 0.15
@@ -15,30 +15,69 @@
   "fixed_conditions": {
     "omega_ref": 12.6,
     "V_max": 12.0,
-    "episodes": 100
+    "train_dt": 0.005,
+    "eval_dt": 0.001,
+    "eval_simulation_time": 10.0
   },
-  "result_interpretation": "The initial TD3 direct voltage controller did not satisfy the v1 feasibility criteria. It converged to a low-speed policy with large steady-state error, so this result is interpreted as evidence that direct RL control has practical limitations under the current state, reward, and training budget.",
+  "outputs": {
+    "training_history": "results/tables/rl_direct_voltage_training_history.csv",
+    "rl_evaluation": "results/tables/rl_direct_voltage_evaluation.csv",
+    "comparison": "results/tables/direct_voltage_rl_comparison.csv",
+    "speed_plot": "results/figures/rl_direct_voltage_speed_comparison.png",
+    "voltage_plot": "results/figures/rl_direct_voltage_control_comparison.png",
+    "training_plot": "results/figures/rl_direct_voltage_training_history.png"
+  },
+  "result_interpretation": "초기 100-episode TD3 direct voltage controller는 v1 feasibility criteria를 만족하지 못했다. 목표 속도 12.6 rad/s에 도달하지 못하고 omega_final=6.824 rad/s에 머물렀기 때문에, 현재 설정에서는 Optimized PID보다 RL Direct Control의 실용성이 낮다고 해석한다.",
   "comparison": [
     {
       "Controller": "Manual PID",
+      "K_p": 0.8,
+      "K_i": 2.0,
+      "K_d": 0.002,
       "J_total": 0.03817651842324221,
+      "J_tracking": 0.00011397909891356004,
+      "J_overshoot": 0.0,
+      "J_control": 0.2540542064259605,
+      "overshoot_percent": 0.0,
+      "settling_time": 1.322,
       "steady_state_error_percent": 2.158820987935383e-07,
+      "voltage_max_abs": 10.24280250329377,
       "saturation_percent": 0.0,
       "omega_final": 12.599999991380132,
-      "feasible": true
+      "feasible": true,
+      "J_improvement_vs_manual_percent": 0.0
     },
     {
       "Controller": "Optimized PID",
+      "K_p": 0.2150965903300887,
+      "K_i": 0.996515767737324,
+      "K_d": 0.0008549205356024,
       "J_total": 0.03670217885813229,
+      "J_tracking": 0.0006108587109045579,
+      "J_overshoot": 7.49975522750603e-09,
+      "J_control": 0.24223774504433834,
+      "overshoot_percent": 0.008660112717226047,
+      "settling_time": 1.547,
       "steady_state_error_percent": 4.709601315635299e-10,
+      "voltage_max_abs": 6.001635261197194,
       "saturation_percent": 0.0,
       "omega_final": 12.600000000000694,
-      "feasible": true
+      "feasible": true,
+      "J_improvement_vs_manual_percent": 3.861901571968205
     },
     {
       "Controller": "RL Direct Control",
+      "K_p": null,
+      "K_i": null,
+      "K_d": null,
       "J_total": 0.07485102504226858,
+      "J_tracking": 0.1051213958237933,
+      "J_overshoot": 0.0,
+      "J_control": 0.07852125031995069,
+      "overshoot_percent": 0.0,
+      "settling_time": null,
       "steady_state_error_percent": 45.84141223562474,
+      "voltage_max_abs": 11.999998092651367,
       "saturation_percent": 0.17998200179982002,
       "omega_final": 6.823982055969611,
       "feasible": false,

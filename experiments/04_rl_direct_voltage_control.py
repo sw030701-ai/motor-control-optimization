@@ -1,13 +1,13 @@
 """
-RL Direct Voltage Control experiment.
+RL Direct Voltage Control 실험.
 
-This experiment uses TD3 because the motor input is a continuous one-dimensional
-voltage action. TD3 fits this setting with less implementation overhead than SAC:
-it learns a deterministic voltage policy, adds exploration noise during training,
-and uses clipped target-policy noise to reduce unstable Q-value overestimation.
+motor input은 1차원 continuous voltage action이므로 TD3를 사용한다.
+TD3는 deterministic voltage policy를 학습하고, training 중 exploration noise를
+더하는 방식이라 SAC보다 현재 v1 실험에 필요한 구현 부담이 작다.
 
-The learned controller is not a PID gain tuner. It observes [e_t, omega_t, i_t]
-and directly outputs V_t, which is clipped to the actuator limit [-12 V, 12 V].
+이 controller는 PID gain tuner가 아니다.
+[e_t, omega_t, i_t]를 관찰하고 V_t를 직접 출력하며,
+V_t는 actuator limit인 [-12 V, 12 V] 범위로 clip한다.
 """
 
 import argparse

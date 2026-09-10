@@ -7,7 +7,7 @@ RL agent가 motor state를 직접 관찰하고 매 time step마다 voltage comma
 [e_t, omega_t, i_t] -> TD3 Agent -> V_t -> DC Motor
 ```
 
-## Fixed Conditions
+## 고정 실험 조건
 
 기존 main 실험과 같은 nominal DC motor, reference speed, voltage limit을 사용한다.
 
@@ -29,11 +29,11 @@ i_t
 \end{bmatrix}
 ```
 
-| Element | Meaning |
+| Element | 의미 |
 |---|---|
 | $e_t$ | $\omega_{ref}-\omega_t$ |
-| $\omega_t$ | Current motor speed |
-| $i_t$ | Armature current |
+| $\omega_t$ | 현재 motor speed |
+| $i_t$ | armature current |
 
 ## Action
 
@@ -41,7 +41,7 @@ i_t
 a_t=V_t
 ```
 
-The environment clips the action:
+environment는 action을 다음 범위로 clip한다.
 
 ```math
 V_t=\mathrm{clip}(a_t,-12,12)
@@ -49,7 +49,7 @@ V_t=\mathrm{clip}(a_t,-12,12)
 
 ## Reward
 
-The reward mirrors the existing PID optimization cost philosophy:
+reward는 기존 PID optimization cost의 철학을 그대로 따른다.
 
 ```math
 r_t=
@@ -60,42 +60,48 @@ r_t=
 \right]
 ```
 
-This keeps the final comparison aligned with the existing tracking,
-overshoot, and control-effort metrics.
+따라서 최종 비교에서도 기존 tracking, overshoot, control effort metric과
+같은 기준으로 해석할 수 있다.
 
 ## Algorithm
 
-The implementation uses `TD3`.
-TD3 is selected because direct voltage control has a continuous action space,
-and the action is only one-dimensional.
-Compared with SAC, TD3 keeps the implementation smaller while still matching
-the state-dependent continuous control problem.
+구현은 `TD3`를 사용한다.
+direct voltage control은 action space가 continuous이고, action dimension이 1개이다.
+그래서 deterministic policy가 voltage를 직접 출력하는 TD3가 이 v1 실험에 자연스럽다.
+SAC도 가능하지만, 현재 프로젝트에서는 TD3가 구현 의존성과 tuning 부담이 더 작다.
 
-## Outputs
+## 실행 방법
 
-Run:
+notebook에서 결과 표와 그래프를 확인한다.
+
+```bash
+jupyter notebook experiments/04_rl_direct_voltage_control.ipynb
+```
+
+같은 실험을 script로 다시 실행할 수도 있다.
 
 ```bash
 python experiments/04_rl_direct_voltage_control.py --episodes 100
 ```
 
-The script writes the final comparison table:
+script는 최종 comparison table을 저장한다.
 
 ```text
 results/tables/direct_voltage_rl_comparison.csv
 ```
 
-The table compares:
+비교 대상은 다음과 같다.
 
-| Controller | Meaning |
+| Controller | 의미 |
 |---|---|
-| Manual PID | Human-selected baseline PID gains |
-| Optimized PID | Best constrained PID from main optimization |
-| RL Direct Control | TD3 policy outputting voltage directly |
+| Manual PID | 사람이 정한 baseline PID gains |
+| Optimized PID | main optimization에서 찾은 constrained PID |
+| RL Direct Control | TD3 policy가 voltage를 직접 출력하는 controller |
 
-## Initial Result
+## 초기 결과
 
-The initial 100-episode TD3 run did not satisfy the v1 feasibility criteria.
+초기 100-episode TD3 실행 결과, RL Direct Control은 v1 feasibility criteria를
+만족하지 못했다.
 
 | Controller | J_total | Steady-state error [%] | Saturation [%] | Feasible |
 |---|---:|---:|---:|---|
@@ -103,16 +109,14 @@ The initial 100-episode TD3 run did not satisfy the v1 feasibility criteria.
 | Optimized PID | 0.03670 | 0.00000 | 0.000 | True |
 | RL Direct Control | 0.07485 | 45.84141 | 0.180 | False |
 
-The learned RL policy remained below the target speed:
+학습된 RL policy는 target speed보다 낮은 속도에 머물렀다.
 
 ```text
 omega_final = 6.824 rad/s
 omega_ref   = 12.600 rad/s
 ```
 
-This result suggests that, under this small training budget and simple state
-definition, TD3 direct voltage control is less reliable than the constrained
-PID approaches. The comparison is still useful because it shows a practical
-limitation of applying RL directly: the method needs more training design,
-reward shaping, and stability checks before it can replace optimized PID in
-this DC motor setup.
+이 결과는 현재의 작은 training budget과 단순한 state 정의에서는 TD3 direct voltage
+control이 constrained PID보다 안정적이지 않다는 것을 보여준다.
+따라서 RL 결과는 실패가 아니라, 이 DC motor setup에서 direct RL control을 쓰려면
+추가적인 reward shaping, 학습 안정화, 검증 절차가 필요하다는 한계 분석으로 해석한다.

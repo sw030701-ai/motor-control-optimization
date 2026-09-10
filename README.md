@@ -3,11 +3,11 @@
 
 ## Project Goal
 
-This project aims to optimize motor control performance using
-classical optimization and reinforcement learning.
+이 프로젝트는 classical optimization과 reinforcement learning을 사용해
+motor control 성능을 비교하고 최적화하는 것을 목표로 한다.
 
-The project starts with a DC motor speed control system and may later
-be extended to mobile robot control.
+첫 단계에서는 DC motor speed control system을 다루고,
+이후 mobile robot control로 확장할 수 있다.
 
 ## Main Pipeline
 
@@ -49,11 +49,12 @@ be extended to mobile robot control.
 
 ## Current Status
 
-Baseline PID experiment is available:
+현재 가능한 실험은 다음과 같다.
 
 - Motor model notebook: `experiments/01_dc_motor_model.ipynb`
 - Notebook: `experiments/02_pid_baseline_tuning.ipynb`
 - PID optimization notebook: `experiments/03_pid_optimization.ipynb`
+- RL direct voltage control notebook: `experiments/04_rl_direct_voltage_control.ipynb`
 - RL direct voltage control script: `experiments/04_rl_direct_voltage_control.py`
 - Nominal motor source: literature-based parameter set, DOI `10.1177/00202940261442256`
 - Baseline gains: `K_p = 0.80`, `K_i = 2.00`, `K_d = 0.002`
@@ -61,30 +62,36 @@ Baseline PID experiment is available:
 
 ## RL Direct Voltage Control
 
-The RL experiment uses direct voltage control instead of PID gain tuning:
+RL 실험은 PID gain tuning이 아니라 direct voltage control 방식으로 진행한다.
 
 ```text
 [e_t, omega_t, i_t] -> TD3 agent -> V_t -> DC motor
 ```
 
-`V_t` is clipped to the actuator range `[-12 V, 12 V]`. TD3 is used because
-the action is continuous and one-dimensional, so a deterministic policy with
-exploration noise is simpler for this project than SAC while still matching
-the direct-voltage control problem.
+`V_t`는 actuator limit에 맞춰 `[-12 V, 12 V]` 범위로 clip한다.
+TD3를 사용한 이유는 action이 1차원 continuous voltage이기 때문이다.
+이 문제에서는 deterministic policy에 exploration noise를 더하는 TD3 구조가
+SAC보다 구현이 단순하고 현재 프로젝트 규모에 더 자연스럽다.
 
-Run the experiment from the repository root:
+notebook에서 결과 표와 response plot을 확인할 수 있다.
+
+```bash
+jupyter notebook experiments/04_rl_direct_voltage_control.ipynb
+```
+
+같은 실험을 script로 다시 실행할 수도 있다.
 
 ```bash
 python experiments/04_rl_direct_voltage_control.py --episodes 100
 ```
 
-PyTorch is required for TD3 training:
+TD3 학습에는 PyTorch가 필요하다.
 
 ```bash
 pip install torch
 ```
 
-The script writes:
+script는 다음 결과 파일을 저장한다.
 
 - `results/tables/rl_direct_voltage_training_history.csv`
 - `results/tables/rl_direct_voltage_evaluation.csv`
@@ -92,7 +99,7 @@ The script writes:
 - `results/figures/rl_direct_voltage_speed_comparison.png`
 - `results/figures/rl_direct_voltage_control_comparison.png`
 
-Initial 100-episode TD3 result:
+초기 100-episode TD3 결과는 다음과 같다.
 
 | Controller | J_total | Steady-state error [%] | Feasible |
 |---|---:|---:|---|
@@ -100,6 +107,6 @@ Initial 100-episode TD3 result:
 | Optimized PID | 0.03670 | 0.00000 | True |
 | RL Direct Control | 0.07485 | 45.84141 | False |
 
-In this v1 setting, RL Direct Control did not replace optimized PID. The result
-is kept as evidence that direct RL control needs more careful training design
-before it is useful for this DC motor speed-control problem.
+이 v1 설정에서는 RL Direct Control이 Optimized PID를 대체하지 못했다.
+따라서 이 결과는 direct RL control이 현재 state, reward, training budget에서는
+한계가 있음을 보여주는 비교 결과로 해석한다.
