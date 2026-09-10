@@ -1,2 +1,2 @@
-Controller,K_p,K_i,K_d,J_total,J_tracking,J_overshoot,J_control,overshoot_percent,settling_time,steady_state_error_percent,voltage_max_abs,saturation_percent,omega_final,feasible
-RL Direct Control,,,,0.07485102504226858,0.1051213958237933,0.0,0.07852125031995069,0.0,inf,45.84141223562474,11.999998092651367,0.17998200179982002,6.823982055969611,False
+Controller,K_p,K_i,K_d,J_total,J_tracking,J_overshoot,J_control,overshoot_percent,settling_time,steady_state_error_percent,voltage_max_abs,saturation_percent,omega_final,feasible,checkpoint_type,checkpoint_metric,checkpoint_score,checkpoint_episode,actor_lr,critic_lr
+RL Direct Control,,,,0.03490333789728869,0.007779457009577775,0.0,0.20157109127694683,0.0,inf,12.430303946984317,12.0,0.5999400059994,11.033781700315744,False,best_deterministic_eval,J_total,0.03490333789728869,20,0.0001,0.0001

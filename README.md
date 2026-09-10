@@ -112,14 +112,15 @@ script는 다음 결과 파일을 저장한다.
 - `results/figures/rl_direct_voltage_speed_comparison.png`
 - `results/figures/rl_direct_voltage_control_comparison.png`
 
-초기 100-episode TD3 결과는 다음과 같다.
+100-episode TD3 재학습 결과는 다음과 같다.
 
-| Controller | J_total | Steady-state error [%] | Feasible |
-|---|---:|---:|---|
-| Manual PID | 0.03818 | 0.00000 | True |
-| Optimized PID | 0.03670 | 0.00000 | True |
-| RL Direct Control | 0.07485 | 45.84141 | False |
+| Controller | J_total | Steady-state error [%] | Best checkpoint episode | Feasible |
+|---|---:|---:|---:|---|
+| Manual PID | 0.03818 | 0.00000 | - | True |
+| Optimized PID | 0.03670 | 0.00000 | - | True |
+| RL Direct Control | 0.03490 | 12.43030 | 20 | False |
 
-이 v1 설정에서는 RL Direct Control이 Optimized PID를 대체하지 못했다.
-따라서 이 결과는 direct RL control이 현재 state, reward, training budget에서는
-한계가 있음을 보여주는 비교 결과로 해석한다.
+RL Direct Control은 best deterministic evaluation checkpoint 기준으로 `J_total`은
+낮아졌지만, steady-state error와 saturation constraint를 만족하지 못해 v1 최종
+controller로 선택하지 않는다. 따라서 이 결과는 direct RL control이 현재 state,
+reward, training budget에서는 추가 안정화가 필요함을 보여주는 비교 결과로 해석한다.

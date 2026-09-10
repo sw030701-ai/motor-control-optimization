@@ -79,6 +79,24 @@ def test_td3_config_uses_reduced_actor_critic_learning_rates():
     assert agent.critic_optimizer.param_groups[0]["lr"] == config.critic_lr
 
 
+def test_rl_direct_voltage_script_defaults_to_100_episodes(monkeypatch):
+    import importlib.util
+    from pathlib import Path
+
+    script_path = Path(__file__).resolve().parents[1] / "experiments" / "04_rl_direct_voltage_control.py"
+    spec = importlib.util.spec_from_file_location("rl_direct_voltage_script", script_path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    monkeypatch.setattr("sys.argv", ["04_rl_direct_voltage_control.py"])
+
+    args = module.parse_args()
+
+    assert args.episodes == 100
+    assert args.eval_every == 10
+    assert args.actor_lr == 1e-4
+    assert args.critic_lr == 1e-4
+
+
 def test_td3_training_saves_best_deterministic_eval_checkpoint(tmp_path):
     pytest.importorskip("torch")
 
@@ -125,4 +143,6 @@ def test_td3_training_saves_best_deterministic_eval_checkpoint(tmp_path):
     assert best_evaluation["episode"] == 2
     assert metadata["checkpoint_metric"] == "J_total"
     assert metadata["checkpoint_episode"] == 2
+    assert metadata["actor_lr"] == 1e-4
+    assert metadata["critic_lr"] == 1e-4
     assert metadata["selection_rule"] == "lowest deterministic evaluation J_total"

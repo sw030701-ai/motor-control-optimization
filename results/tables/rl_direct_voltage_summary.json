@@ -1,12 +1,12 @@
 {
   "algorithm": "TD3",
-  "algorithm_reason": "direct motor voltage는 1차원 continuous action이므로 TD3를 사용했다. 이 v1 실험에서는 SAC보다 deterministic policy 기반 TD3가 구현과 tuning 부담이 작다.",
+  "algorithm_reason": "TD3 is used because direct motor voltage is a continuous action; it keeps the implementation smaller than SAC for this 1D deterministic policy.",
   "state": [
     "e_t",
     "omega_t",
     "i_t"
   ],
-  "action": "V_t를 [-V_max, V_max] 범위로 clip",
+  "action": "V_t clipped to [-V_max, V_max]",
   "reward_weights": {
     "tracking": 0.6,
     "overshoot": 0.25,
@@ -17,17 +17,64 @@
     "V_max": 12.0,
     "train_dt": 0.005,
     "eval_dt": 0.001,
+    "train_simulation_time": 10.0,
     "eval_simulation_time": 10.0
+  },
+  "training_evaluation_split": {
+    "training": "exploration noise and network updates are enabled",
+    "evaluation": "deterministic action selection with exploration and network updates disabled",
+    "eval_every_episodes": 10
+  },
+  "learning_rates": {
+    "previous_actor_lr": 0.0003,
+    "previous_critic_lr": 0.0003,
+    "actor_lr": 0.0001,
+    "critic_lr": 0.0001,
+    "reason": "Both learning rates were reduced to make actor and critic updates more conservative after observed training instability."
+  },
+  "best_checkpoint": {
+    "path": "results/models/td3_direct_voltage_best_actor.pt",
+    "selection_metric": "J_total",
+    "selection_rule": "lowest deterministic evaluation J_total",
+    "episode": 20,
+    "score": 0.03490333789728869,
+    "metadata": {
+      "checkpoint_episode": 20,
+      "checkpoint_metric": "J_total",
+      "checkpoint_score": 0.03490333789728869,
+      "actor_lr": 0.0001,
+      "critic_lr": 0.0001,
+      "selection_rule": "lowest deterministic evaluation J_total",
+      "evaluation": {
+        "J_total": 0.03490333789728869,
+        "J_tracking": 0.007779457009577775,
+        "J_overshoot": 0.0,
+        "J_control": 0.20157109127694683,
+        "overshoot_percent": 0.0,
+        "settling_time": Infinity,
+        "steady_state_error_percent": 12.430303946984317,
+        "voltage_max_abs": 12.0,
+        "saturation_percent": 0.5999400059994,
+        "omega_final": 11.033781700315744,
+        "feasible": false,
+        "episode": 20,
+        "checkpoint_metric": "J_total",
+        "checkpoint_score": 0.03490333789728869,
+        "is_best_checkpoint": true
+      }
+    }
   },
   "outputs": {
     "training_history": "results/tables/rl_direct_voltage_training_history.csv",
+    "eval_history": "results/tables/rl_direct_voltage_eval_history.csv",
     "rl_evaluation": "results/tables/rl_direct_voltage_evaluation.csv",
     "comparison": "results/tables/direct_voltage_rl_comparison.csv",
+    "best_actor": "results/models/td3_direct_voltage_best_actor.pt",
+    "last_actor": "results/models/td3_direct_voltage_last_actor.pt",
     "speed_plot": "results/figures/rl_direct_voltage_speed_comparison.png",
     "voltage_plot": "results/figures/rl_direct_voltage_control_comparison.png",
     "training_plot": "results/figures/rl_direct_voltage_training_history.png"
   },
-  "result_interpretation": "초기 100-episode TD3 direct voltage controller는 v1 feasibility criteria를 만족하지 못했다. 목표 속도 12.6 rad/s에 도달하지 못하고 omega_final=6.824 rad/s에 머물렀기 때문에, 현재 설정에서는 Optimized PID보다 RL Direct Control의 실용성이 낮다고 해석한다.",
   "comparison": [
     {
       "Controller": "Manual PID",
@@ -45,6 +92,12 @@
       "saturation_percent": 0.0,
       "omega_final": 12.599999991380132,
       "feasible": true,
+      "checkpoint_type": null,
+      "checkpoint_metric": null,
+      "checkpoint_score": null,
+      "checkpoint_episode": null,
+      "actor_lr": null,
+      "critic_lr": null,
       "J_improvement_vs_manual_percent": 0.0
     },
     {
@@ -63,6 +116,12 @@
       "saturation_percent": 0.0,
       "omega_final": 12.600000000000694,
       "feasible": true,
+      "checkpoint_type": null,
+      "checkpoint_metric": null,
+      "checkpoint_score": null,
+      "checkpoint_episode": null,
+      "actor_lr": null,
+      "critic_lr": null,
       "J_improvement_vs_manual_percent": 3.861901571968205
     },
     {
@@ -70,18 +129,24 @@
       "K_p": null,
       "K_i": null,
       "K_d": null,
-      "J_total": 0.07485102504226858,
-      "J_tracking": 0.1051213958237933,
+      "J_total": 0.03490333789728869,
+      "J_tracking": 0.007779457009577775,
       "J_overshoot": 0.0,
-      "J_control": 0.07852125031995069,
+      "J_control": 0.20157109127694683,
       "overshoot_percent": 0.0,
-      "settling_time": null,
-      "steady_state_error_percent": 45.84141223562474,
-      "voltage_max_abs": 11.999998092651367,
-      "saturation_percent": 0.17998200179982002,
-      "omega_final": 6.823982055969611,
+      "settling_time": Infinity,
+      "steady_state_error_percent": 12.430303946984317,
+      "voltage_max_abs": 12.0,
+      "saturation_percent": 0.5999400059994,
+      "omega_final": 11.033781700315744,
       "feasible": false,
-      "J_improvement_vs_manual_percent": -96.06561345494143
+      "checkpoint_type": "best_deterministic_eval",
+      "checkpoint_metric": "J_total",
+      "checkpoint_score": 0.03490333789728869,
+      "checkpoint_episode": 20.0,
+      "actor_lr": 0.0001,
+      "critic_lr": 0.0001,
+      "J_improvement_vs_manual_percent": 8.573805734890644
     }
   ]
 }

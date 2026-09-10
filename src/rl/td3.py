@@ -364,6 +364,8 @@ def train_td3_direct_voltage(
                             "checkpoint_episode": episode,
                             "checkpoint_metric": checkpoint_metric,
                             "checkpoint_score": score,
+                            "actor_lr": td3_config.actor_lr,
+                            "critic_lr": td3_config.critic_lr,
                             "selection_rule": (
                                 f"lowest deterministic evaluation {checkpoint_metric}"
                             ),

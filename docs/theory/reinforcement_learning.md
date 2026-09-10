@@ -198,8 +198,9 @@ Environment에서는 항상 다음 actuator limit을 강제한다.
 V_t=\mathrm{clip}(V_t,-12,12)
 ```
 
-초기 100-episode TD3 실험에서는 RL Direct Control이 v1 feasibility criteria를
-만족하지 못했다. 특히 target speed까지 올라가지 못해 steady-state error가 크게 남았다.
+100-episode TD3 재실행에서는 episode 20 deterministic evaluation checkpoint가
+가장 낮은 `J_total`로 선택되었지만, RL Direct Control은 v1 feasibility criteria를
+만족하지 못했다. 특히 target speed까지 충분히 올라가지 못해 steady-state error가 남았다.
 따라서 현재 main 결과에서는 RL이 optimized PID를 대체하기보다는,
 작은 학습 budget과 단순 reward 설계에서 direct RL control이 갖는 한계를 보여주는
 comparison 대상으로 해석한다.

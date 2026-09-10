@@ -126,23 +126,23 @@ results/models/td3_direct_voltage_last_actor.pt
 
 ## 초기 결과
 
-초기 100-episode TD3 실행 결과, RL Direct Control은 v1 feasibility criteria를
-만족하지 못했다.
+100-episode TD3 재실행 결과, RL Direct Control은 best deterministic evaluation
+checkpoint 기준으로 `J_total`은 낮아졌지만 v1 feasibility criteria는 만족하지 못했다.
 
-| Controller | J_total | Steady-state error [%] | Saturation [%] | Feasible |
-|---|---:|---:|---:|---|
-| Manual PID | 0.03818 | 0.00000 | 0.000 | True |
-| Optimized PID | 0.03670 | 0.00000 | 0.000 | True |
-| RL Direct Control | 0.07485 | 45.84141 | 0.180 | False |
+| Controller | J_total | Steady-state error [%] | Saturation [%] | Best checkpoint episode | Feasible |
+|---|---:|---:|---:|---:|---|
+| Manual PID | 0.03818 | 0.00000 | 0.000 | - | True |
+| Optimized PID | 0.03670 | 0.00000 | 0.000 | - | True |
+| RL Direct Control | 0.03490 | 12.43030 | 0.600 | 20 | False |
 
 학습된 RL policy는 target speed보다 낮은 속도에 머물렀다.
 
 ```text
-omega_final = 6.824 rad/s
+omega_final = 11.034 rad/s
 omega_ref   = 12.600 rad/s
 ```
 
 이 결과는 현재의 작은 training budget과 단순한 state 정의에서는 TD3 direct voltage
-control이 constrained PID보다 안정적이지 않다는 것을 보여준다.
+control이 total cost를 낮출 수는 있지만 constrained PID보다 안정적이지 않다는 것을 보여준다.
 따라서 RL 결과는 실패가 아니라, 이 DC motor setup에서 direct RL control을 쓰려면
 추가적인 reward shaping, 학습 안정화, 검증 절차가 필요하다는 한계 분석으로 해석한다.

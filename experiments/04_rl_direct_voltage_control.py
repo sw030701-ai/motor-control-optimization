@@ -66,6 +66,10 @@ def _json_safe(value):
     return value
 
 
+def _project_path(path):
+    return str(Path(path).relative_to(PROJECT_ROOT))
+
+
 def _load_fixed_conditions(params):
     if BASELINE_RECORD_PATH.exists():
         baseline = pd.read_csv(BASELINE_RECORD_PATH).iloc[0]
@@ -223,6 +227,8 @@ def _load_or_train_agent(args, params, train_env_config, eval_env_config):
                 "checkpoint_episode": args.episodes,
                 "checkpoint_metric": CHECKPOINT_METRIC,
                 "checkpoint_score": None,
+                "actor_lr": args.actor_lr,
+                "critic_lr": args.critic_lr,
                 "selection_rule": f"lowest deterministic evaluation {CHECKPOINT_METRIC}",
                 "note": "No scheduled evaluation was run; saved final actor as fallback.",
             },
@@ -345,6 +351,8 @@ def run(args):
             "checkpoint_metric": best_metadata.get("checkpoint_metric", CHECKPOINT_METRIC),
             "checkpoint_score": best_metadata.get("checkpoint_score"),
             "checkpoint_episode": best_metadata.get("checkpoint_episode"),
+            "actor_lr": best_metadata.get("actor_lr", args.actor_lr),
+            "critic_lr": best_metadata.get("critic_lr", args.critic_lr),
         }
     )
     pd.DataFrame([rl_row]).to_csv(RL_EVALUATION_PATH, index=False)
@@ -427,23 +435,29 @@ def run(args):
             ),
         },
         "best_checkpoint": {
-            "path": str(BEST_ACTOR_PATH),
+            "path": _project_path(BEST_ACTOR_PATH),
             "selection_metric": CHECKPOINT_METRIC,
             "selection_rule": f"lowest deterministic evaluation {CHECKPOINT_METRIC}",
+            "episode": best_metadata.get("checkpoint_episode"),
+            "score": best_metadata.get("checkpoint_score"),
             "metadata": best_metadata,
         },
         "outputs": {
-            "training_history": str(TRAINING_HISTORY_PATH),
-            "eval_history": str(EVAL_HISTORY_PATH),
-            "rl_evaluation": str(RL_EVALUATION_PATH),
-            "comparison": str(COMPARISON_PATH),
-            "best_actor": str(BEST_ACTOR_PATH),
-            "last_actor": str(LAST_ACTOR_PATH),
+            "training_history": _project_path(TRAINING_HISTORY_PATH),
+            "eval_history": _project_path(EVAL_HISTORY_PATH),
+            "rl_evaluation": _project_path(RL_EVALUATION_PATH),
+            "comparison": _project_path(COMPARISON_PATH),
+            "best_actor": _project_path(BEST_ACTOR_PATH),
+            "last_actor": _project_path(LAST_ACTOR_PATH),
+            "speed_plot": _project_path(RESULT_FIGURE_DIR / "rl_direct_voltage_speed_comparison.png"),
+            "voltage_plot": _project_path(RESULT_FIGURE_DIR / "rl_direct_voltage_control_comparison.png"),
+            "training_plot": _project_path(RESULT_FIGURE_DIR / "rl_direct_voltage_training_history.png"),
         },
         "comparison": comparison.to_dict(orient="records"),
     }
     with open(SUMMARY_PATH, "w", encoding="utf-8") as f:
         json.dump(_json_safe(summary), f, indent=2, ensure_ascii=False)
+        f.write("\n")
 
     print("\nSaved RL comparison:")
     print(comparison)
@@ -454,7 +468,7 @@ def run(args):
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Train and evaluate TD3 direct voltage control.")
-    parser.add_argument("--episodes", type=int, default=30)
+    parser.add_argument("--episodes", type=int, default=100)
     parser.add_argument("--train-simulation-time", type=float, default=10.0)
     parser.add_argument("--train-dt", type=float, default=0.005)
     parser.add_argument("--eval-simulation-time", type=float, default=10.0)

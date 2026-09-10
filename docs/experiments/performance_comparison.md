@@ -80,12 +80,13 @@ Cost가 낮더라도 constraints를 만족하지 못하면 final comparison cont
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|
 | Manual Baseline | `0.8000` | `2.0000` | `0.0020` | `0.038177` | `0.000114` | `0.000000` | `0.254054` | `0.000` | `1.322 s` | `0.000000` | `10.243 V` | `0.000` | True |
 | Constrained Classical | `0.2151` | `0.9965` | `0.0009` | `0.036702` | `0.000611` | `0.000000` | `0.242238` | `0.009` | `1.547 s` | `0.000000` | `6.002 V` | `0.000` | True |
-| RL Direct Control | - | - | - | `0.074851` | `0.105121` | `0.000000` | `0.078521` | `0.000` | `inf` | `45.841412` | `12.000 V` | `0.180` | False |
+| RL Direct Control | - | - | - | `0.034903` | `0.007779` | `0.000000` | `0.201571` | `0.000` | `inf` | `12.430304` | `12.000 V` | `0.600` | False |
 
 현재 Constrained Classical controller는 `03_pid_optimization.ipynb`에서
 Constrained Bayesian Optimization 결과로 선택되었다.
-초기 TD3 direct-voltage controller는 v1 feasibility criteria를 만족하지 못했기 때문에
-최종 controller로 선택하지 않는다.
+100-episode TD3 direct-voltage controller는 episode 20 best deterministic evaluation
+checkpoint 기준으로 비교했으며, v1 feasibility criteria를 만족하지 못했기 때문에 최종
+controller로 선택하지 않는다.
 
 ---
 
